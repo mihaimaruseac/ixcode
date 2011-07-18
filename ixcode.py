@@ -12,6 +12,23 @@ __PROG__ = 'IxCode'
 __VERSION__ = '0.0'
 __FILETYPES__ = ['C', 'Python', 'c', 'cpp', 'py']
 
+def check_type(filename, filetype, parser):
+    if not filetype:
+        import mimetypes
+        filetype = mimetypes.guess_type(filename)
+        if filetype[0] == 'text/x-csrc':
+            return 'C'
+        elif filetype[0] == 'text/x-python':
+            return 'Python'
+        else:
+            parser.error('Unable to guess filetype, please use -t / --type')
+    elif filetype in ['C', 'c', 'cpp']:
+        return 'C'
+    elif filetype in ['Python', 'py']:
+        return 'Python'
+    else:
+        parser.error('Unable to guess filetype, please use -t / --type')
+
 def build_parser():
     description = '%prog - utility for code spelunking: transform function' +\
             ' to basic block jump tree using PLY and dot.'
@@ -40,10 +57,11 @@ def main():
 
     if not extra:
         parser.error('Missing filename')
-    fileName, functions = extra[0], extra[1:]
-    if not os.path.isfile(fileName):
-        parser.error('%s - No such file' % fileName)
-    print fileName, functions
+    filename, functions = extra[0], extra[1:]
+    if not os.path.isfile(filename):
+        parser.error('%s - No such file' % filename)
+    opts.type = check_type(filename, opts.type, parser)
+    print filename, functions
 
 if __name__ == '__main__':
     main()
