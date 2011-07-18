@@ -35,7 +35,9 @@ def build_parser():
 def main():
     parser = build_parser()
     (opts, extra) = parser.parse_args()
-    print opts
+
+    if not extra:
+        parser.error('Missing filename')
     fileName, functions = extra[0], extra[1:]
     print fileName, functions
 
