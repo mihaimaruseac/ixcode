@@ -4,7 +4,9 @@
 
 # TODO: optparse is deprecated from 2.7, if we ever switch to 3.0+ change to
 # argparse (code doesn't need to change that much)
+
 import optparse
+import os
 
 __PROG__ = 'IxCode'
 __VERSION__ = '0.0'
@@ -39,6 +41,8 @@ def main():
     if not extra:
         parser.error('Missing filename')
     fileName, functions = extra[0], extra[1:]
+    if not os.path.isfile(fileName):
+        parser.error('%s - No such file' % fileName)
     print fileName, functions
 
 if __name__ == '__main__':
