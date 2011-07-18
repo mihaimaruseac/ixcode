@@ -63,8 +63,8 @@ def main():
     if not os.path.isfile(filename):
         parser.error('%s - No such file' % filename)
     opts.type = check_type(filename, opts.type, parser)
-    print filename, functions
-    ixcode.test()
+    error = lambda x: parser.error(x)
+    ixcode.main(filename, functions, opts, error)
 
 if __name__ == '__main__':
     main()
