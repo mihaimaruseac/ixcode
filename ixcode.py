@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 #
-# Entry point for IxCode - app for code spelunking
+# IxCode - app for code spelunking :: block diagram
+# Entry point
 
 # TODO: optparse is deprecated from 2.7, if we ever switch to 3.0+ change to
 # argparse (code doesn't need to change that much)
 
 import optparse
 import os
+import src.ixcode as ixcode
 
 __PROG__ = 'IxCode'
 __VERSION__ = '0.0'
@@ -62,6 +64,7 @@ def main():
         parser.error('%s - No such file' % filename)
     opts.type = check_type(filename, opts.type, parser)
     print filename, functions
+    ixcode.test()
 
 if __name__ == '__main__':
     main()
