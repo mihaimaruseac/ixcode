@@ -1,5 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
+/* This is a 
+ * multiline comment
+ */
+// This is a single line comment
+#include <stdio.h>          //An include
+	#include <stdlib.h>
 
 #define SIZE 10
 #define for_each_start(i, start, size)\
