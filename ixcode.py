@@ -14,7 +14,20 @@ __PROG__ = 'IxCode'
 __VERSION__ = '0.0'
 __FILETYPES__ = ['C', 'Python', 'c', 'cpp', 'py']
 
-def check_type(filename, filetype, parser):
+def check_type(filename, filetype, arg_err):
+    """
+    Checks type of filename. If it was given in the command line uses this,
+    otherwise guesses bassed on MIME.
+
+    Returns a standardized view of the language used. For now, returns the
+    name of the language (C++ and C must be C for now).
+
+        filename - filename to detect
+        filetype - assumed filetype
+        arg_err - callback for errors caused by a command line argument
+        --
+        returns: type of filename as a string representing the language used.
+    """
     if not filetype:
         import mimetypes
         filetype = mimetypes.guess_type(filename)
@@ -23,15 +36,22 @@ def check_type(filename, filetype, parser):
         elif filetype[0] == 'text/x-python':
             return 'Python'
         else:
-            parser.error('Unable to guess filetype, please use -t / --type')
+            arg_err('Unable to guess filetype, please use -t / --type')
     elif filetype in ['C', 'c', 'cpp']:
         return 'C'
     elif filetype in ['Python', 'py']:
         return 'Python'
     else:
-        parser.error('Unable to guess filetype, please use -t / --type')
+        arg_err('Unable to guess filetype, please use -t / --type')
 
 def build_parser():
+    """
+    Builds the option parses for command line arguments. Change here if you
+    want to add more options.
+
+        --
+        returns: parser
+    """
     description = '%prog - utility for code spelunking: transform function' +\
             ' to basic block jump tree using PLY and dot.'
     prog = __PROG__
@@ -54,16 +74,19 @@ def build_parser():
     return parser
 
 def main():
+    """
+    Main entry point.
+    """
     parser = build_parser()
     (opts, extra) = parser.parse_args()
+    error = lambda x: parser.error(x)
 
     if not extra:
-        parser.error('Missing filename')
+        error('Missing filename')
     filename, functions = extra[0], extra[1:]
     if not os.path.isfile(filename):
-        parser.error('%s - No such file' % filename)
-    opts.type = check_type(filename, opts.type, parser)
-    error = lambda x: parser.error(x)
+        error('%s - No such file' % filename)
+    opts.type = check_type(filename, opts.type, error)
     ixcode.main(filename, functions, opts, error)
 
 if __name__ == '__main__':
