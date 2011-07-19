@@ -40,6 +40,12 @@ class Lexer():
         Called when an erroneous token is encountered.
         """
         msg = 'Illegal character %s' % repr(t.value[0])
+        self.error(msg, t)
+
+    def error(self, msg, t):
+        """
+        Called to report an error.
+        """
         location = self.__get_location(t)
         self._err(msg, *location)
         self._lex.skip(1) # if we get here, skip err token
