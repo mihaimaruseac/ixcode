@@ -4,6 +4,8 @@
 import c.ixcode as c
 import python.ixcode as python
 
+import lexer
+
 def main(filename, functions, opts, arg_err):
     """
     Gets the ASTs for each of the required methods (all functions in file if
@@ -20,8 +22,7 @@ def main(filename, functions, opts, arg_err):
         returns: None
     """
     if opts.type == 'C':
-        ast = c.main(filename, functions, opts, arg_err)
+        lexer.lex(filename, c.lang_lex_dict)
     elif opts.type == 'Python':
-        ast = python.main(filename, functions, opts, arg_err)
-    print ast
+        lexer.lex(filename, python.lang_lex_dict)
 
