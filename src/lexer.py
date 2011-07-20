@@ -78,11 +78,11 @@ def lex_err(msg, line, column):
 
 def lex(filename, lang_dict={}):
     """
-    Lexes a filename.
+    Constructs a lexer for a filename.
 
         filename - filename to lex
         --
-        returns: None
+        returns: lexer
     """
     lex = Lexer(filename, lex_err)
 
@@ -90,7 +90,5 @@ def lex(filename, lang_dict={}):
     for k in lang_dict:
         Lexer.__dict__[k] = lang_dict[k]
 
-    for tok in lex:
-        print "-", tok.value, tok.type, tok.lineno, tok.lexpos
-
+    return lex
 
