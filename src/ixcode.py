@@ -5,6 +5,7 @@ import c.ixcode as c
 import python.ixcode as python
 
 import lexer
+import parser
 
 def main(filename, functions, opts, arg_err):
     """
@@ -22,11 +23,7 @@ def main(filename, functions, opts, arg_err):
         returns: None
     """
     lex = get_lexer(filename, opts)
-    if not lex:
-        arg_err("Unable to get lexer for %s files." % opts.type)
-
-    for tok in lex:
-        print "-", tok.value, tok.type, tok.lineno, tok.lexpos
+    ast = get_ast(lex, filename, opts)
 
 def get_lexer(filename, opts):
     """
@@ -41,5 +38,21 @@ def get_lexer(filename, opts):
         return lexer.lex(filename, c.lang_lex_dict)
     elif opts.type == 'Python':
         return lexer.lex(filename, python.lang_lex_dict)
-    return None
+    arg_err("Unable to get lexer for %s files." % opts.type)
+
+def get_ast(lex, filename, opts):
+    """
+    Returns the AST for a file
+
+        lex - lexer for that file
+        filename - filename to parse
+        opts - user options
+        --
+        returns: ast
+    """
+    if opts.type == 'C':
+        return parser.parse(lex, filename, c.lang_parse_dict)
+    elif opts.type == 'Python':
+        return parser.parse(lex, filename, python.lang_parse_dict)
+    arg_err("Unable to parse %s language files." % opts.type)
 
