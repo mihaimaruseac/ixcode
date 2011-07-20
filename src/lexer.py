@@ -100,7 +100,7 @@ def lex_err(msg, line, column):
         returns: None
     """
     print >> sys.stderr, msg, 'at %d:%d' % (line, column)
-    print >> sys.stderr, 'If you think this is an IxCode error report it.'
+    print >> sys.stderr, '\nIf you think this is an IxCode error report it.'
     sys.exit(-1)
 
 def lex(filename, lang_dict={}):
