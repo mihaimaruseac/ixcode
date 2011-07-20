@@ -19,7 +19,7 @@ class Lexer():
 
     def __iter__(self):
         """
-        Returns iteself as an iterator.
+        Returns itself as an iterator.
         """
         self._lex = ply.lex.lex(self)
         with open(self._file) as f:
@@ -81,6 +81,7 @@ def lex(filename, lang_dict={}):
     Constructs a lexer for a filename.
 
         filename - filename to lex
+        lang_dict - dictionary with extensions for a specific language
         --
         returns: lexer
     """
