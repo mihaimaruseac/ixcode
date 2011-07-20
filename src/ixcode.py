@@ -22,37 +22,22 @@ def main(filename, functions, opts, arg_err):
         --
         returns: None
     """
-    lex = get_lexer(filename, opts)
-    ast = get_ast(lex, filename, opts)
+    ast = get_ast(filename, opts)
 
-def get_lexer(filename, opts):
-    """
-    Returns the lexer for a language.
-
-        filename - filename to parse
-        opts - user options
-        --
-        returns: lexer
-    """
-    if opts.type == 'C':
-        return lexer.lex(filename, c.lang_lex_dict)
-    elif opts.type == 'Python':
-        return lexer.lex(filename, python.lang_lex_dict)
-    arg_err("Unable to get lexer for %s files." % opts.type)
-
-def get_ast(lex, filename, opts):
+def get_ast(filename, opts):
     """
     Returns the AST for a file
 
-        lex - lexer for that file
         filename - filename to parse
         opts - user options
         --
         returns: ast
     """
     if opts.type == 'C':
+        lex = lexer.lex(filename, c.lang_lex_dict)
         return parser.parse(lex, filename, c.lang_parse_dict)
     elif opts.type == 'Python':
+        lex = lexer.lex(filename, python.lang_lex_dict)
         return parser.parse(lex, filename, python.lang_parse_dict)
     arg_err("Unable to parse %s language files." % opts.type)
 
