@@ -46,6 +46,13 @@ class Parser():
             self._err("Parse error at end of input (incomplete input): " + \
                     "``%s''" % p.value)
 
+    def p_empty(self, p):
+        'empty  :'
+        """
+        Empty production
+        """
+        pass # don't do anything with the stack
+
 def parse_err(msg, line=None):
     """
     Reports a parse error. Doesn't stop parsing.
