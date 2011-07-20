@@ -30,7 +30,7 @@ class Parser():
         """
         self.__build()
         with open(self._file) as f:
-            ast = self._parser.parse(lexer=self._lex, input=f.read())
+            ast = self._parser.parse(lexer=self._lex, input=f.read(), debug=1)
         return ast
 
     def p_error(self, p):
