@@ -16,12 +16,14 @@ class Lexer():
         """
         self._err = lex_err
         self._file = filename
+        self._built = False
 
     def __iter__(self):
         """
         Returns itself as an iterator.
         """
-        self._lex = ply.lex.lex(self)
+        if not self._built:
+            self.__build()
         with open(self._file) as f:
             self._lex.input(f.read())
         return self
@@ -35,12 +37,38 @@ class Lexer():
             return t
         raise StopIteration
 
+    def token(self):
+        """
+        Required by parser.py. Do not call, use the above iterator methods
+        instead.
+        """
+        if not self._built:
+            self.__build()
+        return self._lex.token()
+
+    def input(self, text):
+        """
+        Required by parser.py. Do not call, use the above iterator methods
+        instead.
+        """
+        if not self._built:
+            self.__build()
+        self._lex.input(text)
+
+    def __build(self):
+        """
+        Builds the lexer. To be called only from the inside.
+        """
+        self._lex = ply.lex.lex(self)
+        self._built = True
+
     def t_error(self, t):
         """
         Called when an erroneous token is encountered.
         """
         msg = 'Illegal character %s' % repr(t.value[0])
         self.error(msg, t)
+        self._lex.skip(1) # if we get here, skip err token
 
     def error(self, msg, t):
         """
@@ -48,7 +76,6 @@ class Lexer():
         """
         location = self.__get_location(t)
         self._err(msg, *location)
-        self._lex.skip(1) # if we get here, skip err token
 
     def __get_location(self, t):
         """
@@ -64,7 +91,7 @@ class Lexer():
 
 def lex_err(msg, line, column):
     """
-    Reports a lexer error. Doesn't stop lexing.
+    Reports a lexer error. Stops lexing.
 
         msg - message to print
         line - line of error
