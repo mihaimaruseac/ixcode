@@ -9,8 +9,7 @@ keywords = [
         'DOUBLE', 'ELSE', 'ENUM', 'EXTERN', 'FLOAT', 'FOR', 'GOTO', 'IF',
         'INLINE', 'INT', 'LONG', 'REGISTER', 'RESTRICT', 'RETURN', 'SHORT',
         'SIGNED', 'SIZEOF', 'STATIC', 'STRUCT', 'SWITCH', 'TYPEDEF', 'UNION',
-        'UNSIGNED', 'VOID', 'VOLATILE', 'WHILE',
-        'DEFINE', 'IFDEF', 'IFNDEF', 'ENDIF', 'INCLUDE'
+        'UNSIGNED', 'VOID', 'VOLATILE', 'WHILE'
         ]
 
 keyword_map = {}
@@ -39,6 +38,27 @@ tokens = keywords + [
 lang_lex_dict = {}
 lang_lex_dict['tokens'] = tokens
 
+lang_lex_dict['states'] = (
+        # a
+        #
+        ('ppline', 'exclusive'),
+        )
+
+def t_ppline_LINE(self, t):
+    r'[^\\\n]+'
+    return None
+
+def t_ppline_EXTEND(self, t):
+    r'\\\n'
+    return None
+
+def t_ppline_NEWLINE(self, t):
+    r'\n'
+    t.lexer.begin('INITIAL')
+
+def t_ppline_error(self, t):
+    self.t_error(t)
+
 def t_COMMENT(self, t):
     r'(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*)'
     """
@@ -59,6 +79,13 @@ def t_LINECONT(self, t):
     Increment line count.
     """
     t.lexer.lineno += 1
+
+def t_PPHASH(self, t):
+    r'\#'
+    """
+    Strip these lines
+    """
+    t.lexer.begin('ppline')
 
 def t_ID(self, t):
     r'[a-zA-Z_][0-9a-zA-Z_]*'
@@ -186,7 +213,7 @@ lang_lex_dict['t_SEMI'] = r';'
 lang_lex_dict['t_COLON'] = r':'
 lang_lex_dict['t_ELLIPSIS'] = r'\.\.\.'
 lang_lex_dict['t_LINECONT'] = t_LINECONT
-lang_lex_dict['t_PPHASH'] = r'\#'
+lang_lex_dict['t_PPHASH'] = t_PPHASH
 lang_lex_dict['t_FLOAT_CONST'] = t_FLOAT_CONST
 lang_lex_dict['t_INT_CONST_HEX'] = t_INT_CONST_HEX
 lang_lex_dict['t_BAD_CONST_OCT'] = t_BAD_CONST_OCT
@@ -197,3 +224,8 @@ lang_lex_dict['t_UNMATCHED_QUOTE'] = t_UNMATCHED_QUOTE
 lang_lex_dict['t_BAD_STRING_LITERAL'] = t_BAD_STRING_LITERAL
 lang_lex_dict['t_STRING_LITERAL'] = t_STRING_LITERAL
 
+lang_lex_dict['t_ppline_error'] = t_ppline_error
+lang_lex_dict['t_ppline_ignore'] = lang_lex_dict['t_ignore']
+lang_lex_dict['t_ppline_LINE'] = t_ppline_LINE
+lang_lex_dict['t_ppline_EXTEND'] = t_ppline_EXTEND
+lang_lex_dict['t_ppline_NEWLINE'] = t_ppline_NEWLINE
