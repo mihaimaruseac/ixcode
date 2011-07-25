@@ -134,9 +134,34 @@ def p_variable_2(self, p):
 lang_parse_dict['p_variable_2'] = p_variable_2
 
 def p_variable_3(self, p):
-    'variable   :   var_name LBRACKET expression RBRACKET'
+    'variable   :   var_name array'
     _p(p.slice)
 lang_parse_dict['p_variable_3'] = p_variable_3
+
+def p_array_1(self, p):
+    'array  :   LBRACKET array_expression RBRACKET'
+    _p(p.slice)
+lang_parse_dict['p_array_1'] = p_array_1
+
+def p_array_2(self, p):
+    'array  :   array LBRACKET array_expression RBRACKET'
+    _p(p.slice)
+lang_parse_dict['p_array_2'] = p_array_2
+
+def p_array_expression_1(self, p):
+    'array_expression   :   expression'
+    _p(p.slice)
+lang_parse_dict['p_array_expression_1'] = p_array_expression_1
+
+def p_array_expression_2(self, p):
+    'array_expression   :   TIMES'
+    _p(p.slice)
+lang_parse_dict['p_array_expression_2'] = p_array_expression_2
+
+def p_array_expression_3(self, p):
+    'array_expression   :   empty'
+    _p(p.slice)
+lang_parse_dict['p_array_expression_3'] = p_array_expression_3
 
 def p_pointer(self, p):
     'pointer    :   TIMES decl_specs'
