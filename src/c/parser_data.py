@@ -8,6 +8,8 @@ import sys
 def _p(msg):
     print >> sys.stderr, msg
 
+start = 'file'
+
 def p_file_0(self, p):
     'file   :   empty'
     _p(p.slice)

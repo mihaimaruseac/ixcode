@@ -22,6 +22,5 @@ for k in _d:
     if k[:2] == 'p_':
         lang_parse_dict[k] = _d[k]
 
-# Change here if not starting from `file'
-lang_parse_dict['start'] = 'file'
+lang_parse_dict['start'] = _d['start']
 
