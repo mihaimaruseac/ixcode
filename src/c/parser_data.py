@@ -137,9 +137,14 @@ def p_variable_1(self, p):
 lang_parse_dict['p_variable_1'] = p_variable_1
 
 def p_variable_2(self, p):
-    'variable   :   pointer var_name'
+    'variable   :   pointer variable'
     _p(p.slice)
 lang_parse_dict['p_variable_2'] = p_variable_2
+
+def p_variable_3(self, p):
+    'variable   :   var_name LBRACKET expression RBRACKET'
+    _p(p.slice)
+lang_parse_dict['p_variable_3'] = p_variable_3
 
 def p_pointer_1(self, p):
     'pointer    :   TIMES decl_specs'
@@ -156,6 +161,12 @@ def p_var_name_1(self, p):
     _p(p[1])
     _p(p.slice)
 lang_parse_dict['p_var_name_1'] = p_var_name_1
+
+def p_expression(self, p):
+    'expression :   ID'
+    _p(p[1])
+    _p(p.slice)
+lang_parse_dict['p_expression'] = p_expression
 
 #def p_decl_1(self, p):
 #    'decl  :   empty'
