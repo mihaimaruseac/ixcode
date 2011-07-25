@@ -14,7 +14,6 @@ for k in _d:
 
 lang_lex_dict['tokens'] = _d['tokens']
 lang_lex_dict['states'] = _d['states']
-#print lang_lex_dict['t_ignore']
 
 _d = sys.modules['src.c.parser_data'].__dict__
 lang_parse_dict = {}

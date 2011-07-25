@@ -53,6 +53,20 @@ def p_type_qualifier(self, p):
     """
     _p(p.slice)
 
+def p_storage_class(self, p):
+    """
+    storage_class   :   AUTO
+                    |   REGISTER
+                    |   STATIC
+                    |   EXTERN
+                    |   TYPEDEF
+    """
+    _p(p.slice)
+
+def p_func_spec(self, p):
+    'func_spec  :   INLINE'
+    _p(p.slice)
+
 def p_type_spec_1(self, p):
     """
     type_spec   :   VOID
@@ -80,20 +94,6 @@ def p_type_spec_4(self, p):
     'type_spec  :   LONG LONG INT'
     _p(p.slice)
 
-def p_storage_class(self, p):
-    """
-    storage_class   :   AUTO
-                    |   REGISTER
-                    |   STATIC
-                    |   EXTERN
-                    |   TYPEDEF
-    """
-    _p(p.slice)
-
-def p_func_spec(self, p):
-    'func_spec  :   INLINE'
-    _p(p.slice)
-
 def p_varlist_1(self, p):
     'varlist    :   variable'
     _p(p.slice)
@@ -114,6 +114,15 @@ def p_variable_3(self, p):
     'variable   :   var_name array'
     _p(p.slice)
 
+def p_var_name(self, p):
+    'var_name   :   ID'
+    _p(p[1])
+    _p(p.slice)
+
+def p_pointer(self, p):
+    'pointer    :   TIMES decl_specs'
+    _p(p.slice)
+
 def p_array_1(self, p):
     'array  :   LBRACKET array_expression RBRACKET'
     _p(p.slice)
@@ -132,15 +141,6 @@ def p_array_expression_2(self, p):
 
 def p_array_expression_3(self, p):
     'array_expression   :   empty'
-    _p(p.slice)
-
-def p_pointer(self, p):
-    'pointer    :   TIMES decl_specs'
-    _p(p.slice)
-
-def p_var_name(self, p):
-    'var_name   :   ID'
-    _p(p[1])
     _p(p.slice)
 
 def p_expression(self, p):
