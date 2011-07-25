@@ -25,6 +25,10 @@ def p_file_2(self, p):
     'file   :   file decl'
     _p(p.slice)
 
+def p_file_3(self, p):
+    'file   :   file function'
+    _p(p.slice)
+
 def p_decl(self, p):
     'decl   :   decl_specs type_spec varlist SEMI'
     _p(p.slice)
@@ -147,5 +151,35 @@ def p_expression(self, p):
     'expression :   ID'
     # TODO: fill
     _p(p[1])
+    _p(p.slice)
+
+def p_function_0(self, p):
+    'function   :   decl_specs type_spec func_name LPAREN f_arg_list RPAREN SEMI'
+    _p(p.slice)
+
+def p_function_1(self, p):
+    'function   :   decl_specs type_spec func_name LPAREN f_arg_list RPAREN block'
+    _p(p.slice)
+
+def p_func_name(self, p):
+    'func_name  :   ID'
+    _p(p.slice)
+
+def p_f_arg_list(self, p):
+    'f_arg_list :   empty'
+    # TODO: fill
+    _p(p.slice)
+
+def p_block(self, p):
+    'block  :   LBRACE block_content RBRACE'
+    _p(p.slice)
+
+def p_block_content_0(self, p):
+    'block_content  :   empty'
+    _p(p.slice)
+
+def p_block_content_1(self, p):
+    'block_content  :   decl'
+    # TODO: fill
     _p(p.slice)
 
