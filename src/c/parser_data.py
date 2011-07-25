@@ -33,7 +33,7 @@ def p_file_2(self, p):
 lang_parse_dict['p_file_2'] = p_file_2
 
 def p_decl_1(self, p):
-    'decl   :   decl_specs varlist SEMI'
+    'decl   :   decl_specs type_spec varlist SEMI'
     _p(p.slice)
 lang_parse_dict['p_decl_1'] = p_decl_1
 
@@ -47,10 +47,10 @@ def p_decl_specs_2(self, p):
     _p(p.slice)
 lang_parse_dict['p_decl_specs_2'] = p_decl_specs_2
 
-def p_decl_specs_3(self, p):
-    'decl_specs :   decl_specs type_spec'
-    _p(p.slice)
-lang_parse_dict['p_decl_specs_3'] = p_decl_specs_3
+#def p_decl_specs_3(self, p):
+#    'decl_specs :   decl_specs type_spec'
+#    _p(p.slice)
+#lang_parse_dict['p_decl_specs_3'] = p_decl_specs_3
 
 def p_decl_specs_4(self, p):
     'decl_specs :   decl_specs storage_class'
@@ -71,7 +71,7 @@ def p_type_qualifier(self, p):
     _p(p.slice)
 lang_parse_dict['p_type_qualifier'] = p_type_qualifier
 
-def p_type_spec(self, p):
+def p_type_spec_1(self, p):
     """
     type_spec   :   VOID
                 |   CHAR
@@ -88,7 +88,22 @@ def p_type_spec(self, p):
 #                |   struct_spec
 #                |   union_spec
     _p(p.slice)
-lang_parse_dict['p_type_spec'] = p_type_spec
+lang_parse_dict['p_type_spec_1'] = p_type_spec_1
+
+def p_type_spec_2(self, p):
+    'type_spec  :   LONG LONG'
+    _p(p.slice)
+lang_parse_dict['p_type_spec_2'] = p_type_spec_2
+
+def p_type_spec_3(self, p):
+    'type_spec  :   LONG INT'
+    _p(p.slice)
+lang_parse_dict['p_type_spec_3'] = p_type_spec_3
+
+def p_type_spec_4(self, p):
+    'type_spec  :   LONG LONG INT'
+    _p(p.slice)
+lang_parse_dict['p_type_spec_4'] = p_type_spec_4
 
 def p_storage_class(self, p):
     """
@@ -120,6 +135,21 @@ def p_variable_1(self, p):
     'variable   :   var_name'
     _p(p.slice)
 lang_parse_dict['p_variable_1'] = p_variable_1
+
+def p_variable_2(self, p):
+    'variable   :   pointer var_name'
+    _p(p.slice)
+lang_parse_dict['p_variable_2'] = p_variable_2
+
+def p_pointer_1(self, p):
+    'pointer    :   TIMES decl_specs'
+    _p(p.slice)
+lang_parse_dict['p_pointer_1'] = p_pointer_1
+
+#def p_pointer_2(self, p):
+#    'pointer    :   TIMES CONST'
+#    _p(p.slice)
+#lang_parse_dict['p_pointer_2'] = p_pointer_2
 
 def p_var_name_1(self, p):
     'var_name   :   ID'
