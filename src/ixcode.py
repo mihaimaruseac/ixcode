@@ -4,7 +4,7 @@
 import lexer
 import parser
 
-def main(filename, functions, opts, arg_err):
+def main(filename, functions, opts, arg_err, debug=False):
     """
     Gets the ASTs for each of the required methods (all functions in file if
     functions == []) then dumps it to a DOT formatted file calling dot to
@@ -19,9 +19,9 @@ def main(filename, functions, opts, arg_err):
         --
         returns: None
     """
-    ast = get_ast(filename, opts)
+    ast = get_ast(filename, opts, debug)
 
-def get_ast(filename, opts):
+def get_ast(filename, opts, debug=False):
     """
     Returns the AST for a file
 
@@ -32,11 +32,11 @@ def get_ast(filename, opts):
     """
     if opts.type == 'C':
         from c.ixcode import (lang_lex_dict, lang_parse_dict)
-        lex = lexer.lex(filename, lang_lex_dict)
-        return parser.parse(lex, filename, lang_parse_dict)
+        lex = lexer.lex(filename, lang_lex_dict, debug)
+        return parser.parse(lex, filename, lang_parse_dict, debug)
     elif opts.type == 'Python':
         from python.ixcode import (lang_lex_dict, lang_parse_dict)
-        lex = lexer.lex(filename, python.lang_lex_dict)
-        return parser.parse(lex, filename, python.lang_parse_dict)
+        lex = lexer.lex(filename, python.lang_lex_dict, debug)
+        return parser.parse(lex, filename, python.lang_parse_dict, debug)
     arg_err("Unable to parse %s language files." % opts.type)
 

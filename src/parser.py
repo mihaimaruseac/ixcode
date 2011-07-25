@@ -10,19 +10,22 @@ class Parser():
     The generic parser. It is instantiated in the parse method below this
     class. Call build to get the AST.
     """
-    def __init__(self, lex, filename, parse_err):
+    def __init__(self, lex, filename, parse_err, debug=False):
         self._lex = lex
         self.tokens = self._lex.tokens
         self._file = filename
         self._err = parse_err
+        self._debug = debug
 
     def __build(self):
         """
         Constructs the actual parser (after language specific rules are
         injected).
         """
-        # TODO: add options for optimization and include them in comments
-        self._parser = ply.yacc.yacc(module=self, write_tables=0)
+        if self._debug:
+            self._parser = ply.yacc.yacc(module=self, write_tables=0)
+        else:
+            self._parser = ply.yacc.yacc(module=self, optimize=True)
 
     def parse(self):
         """
@@ -65,7 +68,7 @@ def parse_err(msg, line=None):
     print >> sys.stderr, msg
     print >> sys.stderr, '\nIf you think this is an IxCode error report it.'
 
-def parse(lex, filename, lang_dict={}):
+def parse(lex, filename, lang_dict={}, debug=False):
     """
     Constructs an AST for a filename.
 
@@ -75,7 +78,7 @@ def parse(lex, filename, lang_dict={}):
         --
         returns: AST representation of filename
     """
-    parser = Parser(lex, filename, parse_err)
+    parser = Parser(lex, filename, parse_err, debug)
 
     # Inject language specific tokens and definitions here
     for k in lang_dict:

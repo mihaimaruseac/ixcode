@@ -73,7 +73,7 @@ def build_parser():
 
     return parser
 
-def main():
+def main(debug):
     """
     Main entry point.
     """
@@ -87,8 +87,8 @@ def main():
     if not os.path.isfile(filename):
         error('%s - No such file' % filename)
     opts.type = check_type(filename, opts.type, error)
-    ixcode.main(filename, functions, opts, error)
+    ixcode.main(filename, functions, opts, error, debug)
 
 if __name__ == '__main__':
-    main()
+    main(True) # Change to False when releasing - disable debugging mode
 

@@ -10,13 +10,14 @@ class Lexer():
     The actual lexer. It is instantiated in the lex method below (used for
     testing it) or by the parser. Returns an iterator over a stream of tokens.
     """
-    def __init__(self, filename, lex_err):
+    def __init__(self, filename, lex_err, debug=False):
         """
         Inits the lexer.
         """
         self._err = lex_err
         self._file = filename
         self._built = False
+        self._debug = debug
 
     def __iter__(self):
         """
@@ -59,7 +60,10 @@ class Lexer():
         """
         Builds the lexer. To be called only from the inside.
         """
-        self._lex = ply.lex.lex(self)
+        if self._debug:
+            self._lex = ply.lex.lex(self)
+        else:
+            self._lex = ply.lex.lex(self, optimize=True)
         self._built = True
 
     def t_error(self, t):
@@ -103,7 +107,7 @@ def lex_err(msg, line, column):
     print >> sys.stderr, '\nIf you think this is an IxCode error report it.'
     sys.exit(-1)
 
-def lex(filename, lang_dict={}):
+def lex(filename, lang_dict={}, debug=False):
     """
     Constructs a lexer for a filename.
 
@@ -112,7 +116,7 @@ def lex(filename, lang_dict={}):
         --
         returns: lexer
     """
-    lex = Lexer(filename, lex_err)
+    lex = Lexer(filename, lex_err, debug)
 
     # Inject language specific tokens and definitions here
     for k in lang_dict:
