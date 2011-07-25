@@ -1,9 +1,6 @@
 # IxCode - app for code spelunking :: block diagram
 # Overmind
 
-import c.ixcode as c
-import python.ixcode as python
-
 import lexer
 import parser
 
@@ -34,9 +31,11 @@ def get_ast(filename, opts):
         returns: ast
     """
     if opts.type == 'C':
-        lex = lexer.lex(filename, c.lang_lex_dict)
-        return parser.parse(lex, filename, c.lang_parse_dict)
+        from c.ixcode import (lang_lex_dict, lang_parse_dict)
+        lex = lexer.lex(filename, lang_lex_dict)
+        return parser.parse(lex, filename, lang_parse_dict)
     elif opts.type == 'Python':
+        from python.ixcode import (lang_lex_dict, lang_parse_dict)
         lex = lexer.lex(filename, python.lang_lex_dict)
         return parser.parse(lex, filename, python.lang_parse_dict)
     arg_err("Unable to parse %s language files." % opts.type)
