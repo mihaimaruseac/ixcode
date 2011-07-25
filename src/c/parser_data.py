@@ -32,10 +32,10 @@ def p_file_2(self, p):
     _p(p.slice)
 lang_parse_dict['p_file_2'] = p_file_2
 
-def p_decl_1(self, p):
+def p_decl(self, p):
     'decl   :   decl_specs type_spec varlist SEMI'
     _p(p.slice)
-lang_parse_dict['p_decl_1'] = p_decl_1
+lang_parse_dict['p_decl'] = p_decl
 
 def p_decl_specs_1(self, p):
     'decl_specs :   empty'
@@ -47,20 +47,15 @@ def p_decl_specs_2(self, p):
     _p(p.slice)
 lang_parse_dict['p_decl_specs_2'] = p_decl_specs_2
 
-#def p_decl_specs_3(self, p):
-#    'decl_specs :   decl_specs type_spec'
-#    _p(p.slice)
-#lang_parse_dict['p_decl_specs_3'] = p_decl_specs_3
-
-def p_decl_specs_4(self, p):
+def p_decl_specs_3(self, p):
     'decl_specs :   decl_specs storage_class'
     _p(p.slice)
-lang_parse_dict['p_decl_specs_4'] = p_decl_specs_4
+lang_parse_dict['p_decl_specs_3'] = p_decl_specs_3
 
-def p_decl_specs_5(self, p):
+def p_decl_specs_4(self, p):
     'decl_specs :   decl_specs func_spec'
     _p(p.slice)
-lang_parse_dict['p_decl_specs_5'] = p_decl_specs_5
+lang_parse_dict['p_decl_specs_4'] = p_decl_specs_4
 
 def p_type_qualifier(self, p):
     """
@@ -84,9 +79,6 @@ def p_type_spec_1(self, p):
                 |   UNSIGNED
                 |   ID
     """
-#                |   enum_spec
-#                |   struct_spec
-#                |   union_spec
     _p(p.slice)
 lang_parse_dict['p_type_spec_1'] = p_type_spec_1
 
@@ -146,21 +138,16 @@ def p_variable_3(self, p):
     _p(p.slice)
 lang_parse_dict['p_variable_3'] = p_variable_3
 
-def p_pointer_1(self, p):
+def p_pointer(self, p):
     'pointer    :   TIMES decl_specs'
     _p(p.slice)
-lang_parse_dict['p_pointer_1'] = p_pointer_1
+lang_parse_dict['p_pointer'] = p_pointer
 
-#def p_pointer_2(self, p):
-#    'pointer    :   TIMES CONST'
-#    _p(p.slice)
-#lang_parse_dict['p_pointer_2'] = p_pointer_2
-
-def p_var_name_1(self, p):
+def p_var_name(self, p):
     'var_name   :   ID'
     _p(p[1])
     _p(p.slice)
-lang_parse_dict['p_var_name_1'] = p_var_name_1
+lang_parse_dict['p_var_name'] = p_var_name
 
 def p_expression(self, p):
     'expression :   ID'
