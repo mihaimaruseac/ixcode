@@ -38,7 +38,7 @@ tokens = keywords + [
 lang_lex_dict = {}
 lang_lex_dict['tokens'] = tokens
 
-lang_lex_dict['states'] = (
+states = lang_lex_dict['states'] = (
         # a
         #
         ('ppline', 'exclusive'),
@@ -161,71 +161,51 @@ def t_BAD_STRING_LITERAL(self, t):
 def t_STRING_LITERAL(self, t):
     return t
 
-# Add each t_TOKEN to lang_lex_dict dictionary
-lang_lex_dict['t_ignore'] = ' \t'
-lang_lex_dict['t_COMMENT'] = t_COMMENT
-lang_lex_dict['t_NEWLINE'] = t_NEWLINE
-lang_lex_dict['t_ID'] = t_ID
-lang_lex_dict['t_PLUS'] = r'\+'
-lang_lex_dict['t_MINUS'] = r'-'
-lang_lex_dict['t_TIMES'] = r'\*'
-lang_lex_dict['t_DIVIDE'] = r'/'
-lang_lex_dict['t_MOD'] = r'%'
-lang_lex_dict['t_OR'] = r'\|'
-lang_lex_dict['t_AND'] = r'&'
-lang_lex_dict['t_NOT'] = r'~'
-lang_lex_dict['t_XOR'] = r'\^'
-lang_lex_dict['t_LSHIFT'] = r'<<'
-lang_lex_dict['t_RSHIFT'] = r'>>'
-lang_lex_dict['t_LOR'] = r'\|\|'
-lang_lex_dict['t_LAND'] = r'&&'
-lang_lex_dict['t_LNOT'] = r'!'
-lang_lex_dict['t_LT'] = r'<'
-lang_lex_dict['t_LE'] = r'<='
-lang_lex_dict['t_GT'] = r'>'
-lang_lex_dict['t_GE'] = r'>='
-lang_lex_dict['t_EQ'] = r'=='
-lang_lex_dict['t_NE'] = r'!='
-lang_lex_dict['t_EQUALS'] = r'='
-lang_lex_dict['t_PLUSEQUAL'] = r'\+='
-lang_lex_dict['t_MINUSEQUAL'] = r'-='
-lang_lex_dict['t_TIMESEQUAL'] = r'\*='
-lang_lex_dict['t_DIVEQUAL'] = r'/='
-lang_lex_dict['t_MODEQUAL'] = r'%='
-lang_lex_dict['t_LSHIFTEQUAL'] = r'<<='
-lang_lex_dict['t_RSHIFTEQUAL'] = r'>>='
-lang_lex_dict['t_ANDEQUAL'] = r'&='
-lang_lex_dict['t_OREQUAL'] = r'\|='
-lang_lex_dict['t_XOREQUAL'] = r'\^='
-lang_lex_dict['t_PLUSPLUS'] = r'\+\+'
-lang_lex_dict['t_MINUSMINUS'] = r'--'
-lang_lex_dict['t_ARROW'] = r'->'
-lang_lex_dict['t_CONDOP'] = r'\?'
-lang_lex_dict['t_LPAREN'] = r'\('
-lang_lex_dict['t_RPAREN'] = r'\)'
-lang_lex_dict['t_LBRACKET'] = r'\['
-lang_lex_dict['t_RBRACKET'] = r'\]'
-lang_lex_dict['t_LBRACE'] = r'\{'
-lang_lex_dict['t_RBRACE'] = r'\}'
-lang_lex_dict['t_COMMA'] = r','
-lang_lex_dict['t_PERIOD'] = r'\.'
-lang_lex_dict['t_SEMI'] = r';'
-lang_lex_dict['t_COLON'] = r':'
-lang_lex_dict['t_ELLIPSIS'] = r'\.\.\.'
-lang_lex_dict['t_LINECONT'] = t_LINECONT
-lang_lex_dict['t_PPHASH'] = t_PPHASH
-lang_lex_dict['t_FLOAT_CONST'] = t_FLOAT_CONST
-lang_lex_dict['t_INT_CONST_HEX'] = t_INT_CONST_HEX
-lang_lex_dict['t_BAD_CONST_OCT'] = t_BAD_CONST_OCT
-lang_lex_dict['t_INT_CONST_OCT'] = t_INT_CONST_OCT
-lang_lex_dict['t_INT_CONST_DEC'] = t_INT_CONST_DEC
-lang_lex_dict['t_CHAR_CONST'] = t_CHAR_CONST
-lang_lex_dict['t_UNMATCHED_QUOTE'] = t_UNMATCHED_QUOTE
-lang_lex_dict['t_BAD_STRING_LITERAL'] = t_BAD_STRING_LITERAL
-lang_lex_dict['t_STRING_LITERAL'] = t_STRING_LITERAL
+t_ignore = t_ppline_ignore = ' \t'
+t_PLUS = r'\+'
+t_MINUS = r'-'
+t_TIMES = r'\*'
+t_DIVIDE = r'/'
+t_MOD = r'%'
+t_OR = r'\|'
+t_AND = r'&'
+t_NOT = r'~'
+t_XOR = r'\^'
+t_LSHIFT = r'<<'
+t_RSHIFT = r'>>'
+t_LOR = r'\|\|'
+t_LAND = r'&&'
+t_LNOT = r'!'
+t_LT = r'<'
+t_LE = r'<='
+t_GT = r'>'
+t_GE = r'>='
+t_EQ = r'=='
+t_NE = r'!='
+t_EQUALS = r'='
+t_PLUSEQUAL = r'\+='
+t_MINUSEQUAL = r'-='
+t_TIMESEQUAL = r'\*='
+t_DIVEQUAL = r'/='
+t_MODEQUAL = r'%='
+t_LSHIFTEQUAL = r'<<='
+t_RSHIFTEQUAL = r'>>='
+t_ANDEQUAL = r'&='
+t_OREQUAL = r'\|='
+t_XOREQUAL = r'\^='
+t_PLUSPLUS = r'\+\+'
+t_MINUSMINUS = r'--'
+t_ARROW = r'->'
+t_CONDOP = r'\?'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
+t_COMMA = ','
+t_PERIOD = r'\.'
+t_SEMI = r';'
+t_COLON = r':'
+t_ELLIPSIS = r'\.\.\.'
 
-lang_lex_dict['t_ppline_error'] = t_ppline_error
-lang_lex_dict['t_ppline_ignore'] = lang_lex_dict['t_ignore']
-lang_lex_dict['t_ppline_LINE'] = t_ppline_LINE
-lang_lex_dict['t_ppline_EXTEND'] = t_ppline_EXTEND
-lang_lex_dict['t_ppline_NEWLINE'] = t_ppline_NEWLINE
