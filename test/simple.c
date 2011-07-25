@@ -11,6 +11,11 @@
 #define for_each(i, size)\
     for_each_start(i, 0, size)
 
+int i;
+int i1, i2;
+const int * const b;
+static int eax;
+volatile long long int d;
 int a[SIZE];
 
 void f1()
