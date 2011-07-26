@@ -11,6 +11,11 @@ def _p(msg):
 start = 'file'
 
 precedence = (
+        ('nonassoc', 'LT', 'LE', 'EQ', 'GE', 'GT'),
+        ('left', 'PLUS', 'MINUS'),
+        ('left', 'TIMES', 'DIVIDE', 'MOD'),
+        ('right', 'POINTER'),
+        ('right', 'UMINUS'),
         ('right', 'ID'),
         )
 
@@ -128,7 +133,7 @@ def p_var_name(self, p):
     _p(p.slice)
 
 def p_pointer(self, p):
-    'pointer    :   TIMES decl_specs'
+    'pointer    :   TIMES decl_specs %prec POINTER'
     _p(p.slice)
 
 def p_array_1(self, p):
@@ -155,6 +160,25 @@ def p_expression_1(self, p):
     'expression :   arg'
     _p(p.slice)
 
+def p_expression_2(self, p):
+    """
+    expression  :   expression LT expression
+                |   expression LE expression
+                |   expression EQ expression
+                |   expression GE expression
+                |   expression GT expression
+                |   expression PLUS expression
+                |   expression MINUS expression
+                |   expression TIMES expression
+                |   expression DIVIDE expression
+                |   expression MOD expression
+    """
+    _p(p.slice)
+
+def p_expression_3(self, p):
+    'expression  :   MINUS arg %prec UMINUS'
+    _p(p.slice)
+
 #def p_expression_2(self, p):
 #    'expression :   constant'
 #    _p(p.slice)
@@ -168,7 +192,7 @@ def p_arg_1(self, p):
     _p(p.slice)
 
 def p_arg_2(self, p):
-    'arg   :   TIMES arg'
+    'arg   :   TIMES arg %prec POINTER'
     _p(p.slice)
 
 def p_arg_3(self, p):
@@ -251,7 +275,7 @@ def p_instruction_1(self, p):
     _p(p.slice)
 
 def p_instruction_2(self, p):
-    'instruction    :   for_like_macro instruction'
+    'instruction    :   function_call instruction'
     _p(p.slice)
 
 def p_instruction_3(self, p):
@@ -260,10 +284,6 @@ def p_instruction_3(self, p):
 
 def p_instruction_4(self, p):
     'instruction    :   label'
-    _p(p.slice)
-
-def p_for_like_macro(self, p):
-    'for_like_macro :   function_call'
     _p(p.slice)
 
 def p_label(self, p):
