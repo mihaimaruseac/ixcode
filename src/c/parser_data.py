@@ -230,6 +230,10 @@ def p_func_name(self, p):
     'func_name  :   ID'
     _p(p.slice)
 
+def p_arglist_0(self, p):
+    'arglist    :   empty'
+    _p(p.slice)
+
 def p_arglist_1(self, p):
     'arglist    :   arg'
     _p(p.slice)
