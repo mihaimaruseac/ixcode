@@ -39,8 +39,6 @@ lang_lex_dict = {}
 lang_lex_dict['tokens'] = tokens
 
 states = lang_lex_dict['states'] = (
-        # a
-        #
         ('ppline', 'exclusive'),
         )
 
