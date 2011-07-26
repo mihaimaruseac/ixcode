@@ -291,6 +291,10 @@ def p_instruction_5(self, p):
     'instruction    :   GOTO ID SEMI'
     _p(p.slice)
 
+def p_instruction_6(self, p):
+    'instruction    :   FOR for_header instruction'
+    _p(p.slice)
+
 def p_label(self, p):
     'label  :   ID  COLON'
     _p(p.slice)
@@ -309,5 +313,14 @@ def p_if_3(self, p):
 
 def p_if_4(self, p):
     'if :   IF LPAREN expression RPAREN instruction ELSE if'
+    _p(p.slice)
+
+def p_for_header_1(self, p):
+    'for_header :   LPAREN initializer SEMI expression SEMI expression RPAREN'
+    # TODO: other for expressions
+    _p(p.slice)
+
+def p_initializer(self, p):
+    'initializer    :   arg EQUALS expression'
     _p(p.slice)
 
