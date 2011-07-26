@@ -310,6 +310,10 @@ def p_instruction_7(self, p):
     'instruction    :   initializer SEMI'
     _p(p.slice)
 
+def p_instruction_8(self, p):
+    'instruction    :   RETURN  expression SEMI'
+    _p(p.slice)
+
 def p_label(self, p):
     'label  :   ID  COLON'
     _p(p.slice)
