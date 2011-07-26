@@ -246,9 +246,16 @@ def p_function_1(self, p):
     'function   :   decl_specs type_spec func_name LPAREN f_arg_list RPAREN block'
     _p(p.slice)
 
-def p_f_arg_list(self, p):
+def p_f_arg_list_1(self, p):
     'f_arg_list :   empty'
-    # TODO: fill
+    _p(p.slice)
+
+def p_f_arg_list_2(self, p):
+    'f_arg_list :   decl_specs type_spec variable'
+    _p(p.slice)
+
+def p_f_arg_list_3(self, p):
+    'f_arg_list :   f_arg_list COMMA decl_specs type_spec variable'
     _p(p.slice)
 
 def p_block(self, p):
