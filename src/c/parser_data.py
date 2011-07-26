@@ -286,6 +286,10 @@ def p_instruction_4(self, p):
     'instruction    :   label'
     _p(p.slice)
 
+def p_instruction_5(self, p):
+    'instruction    :   GOTO ID SEMI'
+    _p(p.slice)
+
 def p_label(self, p):
     'label  :   ID  COLON'
     _p(p.slice)
