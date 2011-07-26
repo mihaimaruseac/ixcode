@@ -10,6 +10,10 @@ def _p(msg):
 
 start = 'file'
 
+precedence = (
+        ('right', 'ID'),
+        )
+
 def p_file_0(self, p):
     'file   :   empty'
     _p(p.slice)

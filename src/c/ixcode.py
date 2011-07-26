@@ -22,4 +22,5 @@ for k in _d:
         lang_parse_dict[k] = _d[k]
 
 lang_parse_dict['start'] = _d['start']
+lang_parse_dict['precedence'] = _d['precedence']
 
