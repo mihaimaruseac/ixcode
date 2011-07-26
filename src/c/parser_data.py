@@ -179,13 +179,14 @@ def p_expression_3(self, p):
     'expression  :   MINUS arg %prec UMINUS'
     _p(p.slice)
 
-#def p_expression_2(self, p):
-#    'expression :   constant'
-#    _p(p.slice)
-#
-#def p_expression_3(self, p):
-#    'expression :   function_call'
-#    _p(p.slice)
+def p_expression_4(self, p):
+    """
+    expression  :   arg PLUSPLUS
+                |   arg MINUSMINUS
+                |   PLUSPLUS arg
+                |   MINUSMINUS arg
+    """
+    _p(p.slice)
 
 def p_arg_1(self, p):
     'arg   :   arg_name'
