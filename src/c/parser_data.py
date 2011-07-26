@@ -164,6 +164,48 @@ def p_expression_3(self, p):
     'expression :   function_call'
     _p(p.slice)
 
+def p_constant_1(self, p):
+    """
+    constant    :   STRING_LITERAL
+                |   INT_CONST_DEC
+                |   INT_CONST_HEX
+                |   INT_CONST_OCT
+                |   FLOAT_CONST
+    """
+    _p(p.slice)
+
+def p_function_call(self, p):
+    'function_call  :   func_name LPAREN arglist RPAREN'
+    _p(p.slice)
+
+def p_arglist_1(self, p):
+    'arglist    :   arg'
+    _p(p.slice)
+
+def p_arglist_2(self, p):
+    'arglist    :   arglist COMMA arg'
+    _p(p.slice)
+
+def p_arg_1(self, p):
+    'arg   :   arg_name'
+    _p(p.slice)
+
+def p_arg_2(self, p):
+    'arg   :   TIMES arg'
+    _p(p.slice)
+
+def p_argiable_3(self, p):
+    'arg   :   arg_name array'
+    _p(p.slice)
+
+def p_arg_name_1(self, p):
+    'arg_name   :   ID'
+    _p(p.slice)
+
+def p_arg_name_2(self, p):
+    'arg_name   :   constant'
+    _p(p.slice)
+
 def p_function_0(self, p):
     'function   :   decl_specs type_spec func_name LPAREN f_arg_list RPAREN SEMI'
     _p(p.slice)
@@ -211,47 +253,5 @@ def p_instruction_3(self, p):
 
 def p_for_like_macro(self, p):
     'for_like_macro :   function_call'
-    _p(p.slice)
-
-def p_function_call(self, p):
-    'function_call  :   func_name LPAREN arglist RPAREN'
-    _p(p.slice)
-
-def p_arglist_1(self, p):
-    'arglist    :   arg'
-    _p(p.slice)
-
-def p_arglist_2(self, p):
-    'arglist    :   arglist COMMA arg'
-    _p(p.slice)
-
-def p_arg_1(self, p):
-    'arg   :   arg_name'
-    _p(p.slice)
-
-def p_arg_2(self, p):
-    'arg   :   TIMES arg'
-    _p(p.slice)
-
-def p_argiable_3(self, p):
-    'arg   :   arg_name array'
-    _p(p.slice)
-
-def p_arg_name_1(self, p):
-    'arg_name   :   ID'
-    _p(p.slice)
-
-def p_arg_name_2(self, p):
-    'arg_name   :   constant'
-    _p(p.slice)
-
-def p_constant_1(self, p):
-    """
-    constant    :   STRING_LITERAL
-                |   INT_CONST_DEC
-                |   INT_CONST_HEX
-                |   INT_CONST_OCT
-                |   FLOAT_CONST
-    """
     _p(p.slice)
 
