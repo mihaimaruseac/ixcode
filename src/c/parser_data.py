@@ -259,10 +259,6 @@ def p_instruction_4(self, p):
     'instruction    :   label'
     _p(p.slice)
 
-#def p_instruction_5(self, p):
-#    'instruction    :   if'
-#    _p(p.slice)
-
 def p_for_like_macro(self, p):
     'for_like_macro :   function_call'
     _p(p.slice)
