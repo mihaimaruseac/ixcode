@@ -239,6 +239,10 @@ def p_block_content_2(self, p):
     'block_content  :   block_content instruction'
     _p(p.slice)
 
+def p_block_content_3(self, p):
+    'block_content  :   block_content if'
+    _p(p.slice)
+
 def p_instruction_1(self, p):
     'instruction    :   block'
     _p(p.slice)
@@ -255,11 +259,31 @@ def p_instruction_4(self, p):
     'instruction    :   label'
     _p(p.slice)
 
+#def p_instruction_5(self, p):
+#    'instruction    :   if'
+#    _p(p.slice)
+
 def p_for_like_macro(self, p):
     'for_like_macro :   function_call'
     _p(p.slice)
 
 def p_label(self, p):
     'label  :   ID  COLON'
+    _p(p.slice)
+
+def p_if_1(self, p):
+    'if :   IF LPAREN expression RPAREN instruction'
+    _p(p.slice)
+
+def p_if_2(self, p):
+    'if :   IF LPAREN expression RPAREN if'
+    _p(p.slice)
+
+def p_if_3(self, p):
+    'if :   IF LPAREN expression RPAREN instruction ELSE instruction'
+    _p(p.slice)
+
+def p_if_4(self, p):
+    'if :   IF LPAREN expression RPAREN instruction ELSE if'
     _p(p.slice)
 
