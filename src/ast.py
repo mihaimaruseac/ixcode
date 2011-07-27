@@ -144,6 +144,9 @@ class Instruction(TextNode):
         """
         return False
 
+    def is_return(self):
+        return False
+
     def insides(self, links):
         """
         Returns inside blocks to jump there if any or [].
@@ -157,6 +160,9 @@ class RetInstruction(Instruction):
     def __init__(self, text):
         Instruction.__init__(self, text)
         self._leader = True
+
+    def is_return(self):
+        return True
 
 class ForInstruction(Instruction):
     """

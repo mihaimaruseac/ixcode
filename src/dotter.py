@@ -74,9 +74,7 @@ def get_blocks(block, leaders, blocks):
     if last_leader:
         blocks.append(BB(id(last_leader), last_leader, bbi))
 
-def get_links(block, leaders, blocks, links):
-    instrs = block.instrs()
-
+def jump_in_blocks(instrs, leaders, blocks, links):
     instructions = []
     prev = None
     for i in instrs:
@@ -89,8 +87,6 @@ def get_links(block, leaders, blocks, links):
                 break
         else:
             instructions.append((i, prev))
-    print instructions
-    print blocks
 
     for i, p in instructions:
         jumps = i.insides(links)
@@ -100,6 +96,46 @@ def get_links(block, leaders, blocks, links):
         else:
             for j in jumps:
                 links[(START, j[0])] = j[1]
+
+def jump_out_of_blocks(instrs, leaders, blocks, links):
+    instructions = []
+    prev = None
+    for i in instrs:
+        if id(i) in leaders:
+            if prev:
+                instructions.append((prev, i))
+                prev = None
+        for b in blocks:
+            if not b._instrs:
+                continue
+            if i in b._instrs:
+                break
+        else:
+            prev = i
+
+    for p, i in instructions:
+        jumps = p.insides(links)
+        for j in jumps:
+            links[(j[0], id(i))] = ''
+
+def link_blocks(instrs, leaders, blocks, links):
+    ll = None
+    for i in instrs:
+        if id(i) in leaders:
+            if ll:
+                links[(id(ll), id(i))] = ''
+            else:
+                links[(START, id(i))] = ''
+            ll = i
+        if i.is_return():
+            links[(id(i), END)] = ''
+
+def get_links(block, leaders, blocks, links):
+    instrs = block.instrs()
+
+    jump_in_blocks(instrs, leaders, blocks, links)
+    jump_out_of_blocks(instrs, leaders, blocks, links)
+    link_blocks(instrs, leaders, blocks, links)
 
 #    for i, p in instructions:
 #        jumps = i.jumps()
