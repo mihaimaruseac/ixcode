@@ -56,7 +56,12 @@ class Block(Node):
 
     def add(self, i):
         if i:
+            if not self._instructions:
+                i.set_leader()
             self._instructions.append(i)
+
+    def instrs(self):
+        return self._instructions
 
     def __str__(self):
         return "<block> {...}"
@@ -82,6 +87,11 @@ class Function(Node):
     def name(self):
         return self._name
 
+    def block(self):
+        if self._block.is_block():
+            return self._block.block()
+        return self._block
+
 class TextNode(Node):
     """
     A node containing a text describing the corresponding instruction.
@@ -102,13 +112,39 @@ class Instruction(TextNode):
     """
     An instruction to be displayed in the diagram. Doesn't jump.
     """
-    pass
+    def __init__(self, text):
+        TextNode.__init__(self, text)
+        self._leader = False
+
+    def set_leader(self):
+        if not self.is_block():
+            self._leader = True
+
+    def is_leader(self):
+        """
+        Returns True if this instruction leads a basic block.
+        """
+        return self._leader
+
+    def is_block(self):
+        """
+        Returns True if this is a block.
+        """
+        return False
+
+    def is_jump(self):
+        """
+        Returns True if this instruction may jump.
+        """
+        return False
 
 class RetInstruction(Instruction):
     """
     A return instruction. Always in a single block.
     """
-    pass
+    def __init__(self, text):
+        Instruction.__init__(self, text)
+        self._leader = True
 
 class ForInstruction(Instruction):
     """
@@ -116,7 +152,27 @@ class ForInstruction(Instruction):
     """
     def __init__(self, header, content):
         Instruction.__init__(self, "for %s {...}" % header)
-        self._content = content
+        if not content.is_block():
+            self._content = Block()
+            self._content.add(content)
+        else:
+            self._content = content.block().block()
+
+    def is_block(self):
+        return True
+
+    def is_jump(self):
+        return True
+
+    def block(self):
+        return self._content
+
+class MacroLoopInstruction(ForInstruction):
+    """
+    A macro which represents a loop. Guessed.
+    """
+    def __init__(self, header, content):
+        ForInstruction.__init__(self, "#loop %s" % header, content)
 
 class GoToInstruction(Instruction):
     """
@@ -129,6 +185,9 @@ class GoToInstruction(Instruction):
         Instruction.__init__(self, "goto %s" % label)
         self._label = label
 
+    def is_jump(self):
+        return True
+
 class LabelInstruction(Instruction):
     """
     A label. Always the start of a new block.
@@ -139,6 +198,7 @@ class LabelInstruction(Instruction):
         """
         Instruction.__init__(self, "%s:" % label)
         self._label = label
+        self._leader = True
 
 class BlockInstruction(Instruction):
     """
@@ -147,6 +207,15 @@ class BlockInstruction(Instruction):
     def __init__(self, block):
         Instruction.__init__(self, "{...}")
         self._block = block
+
+    def block(self):
+        return self._block
+
+    def is_block(self):
+        return True
+
+    def is_jump(self):
+        return True
 
 class IfInstruction(Instruction):
     """
@@ -157,12 +226,6 @@ class IfInstruction(Instruction):
         self._true = true
         self._false = false
 
-class MacroLoopInstruction(Instruction):
-    """
-    A macro which represents a loop. Guessed.
-    """
-    def __init__(self, header, body):
-        Instruction.__init__(self, "#loop %s{...}" % header)
-        self._header = header
-        self._body = body
+    def is_jump(self):
+        return True
 
