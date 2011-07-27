@@ -63,6 +63,12 @@ class Block(Node):
     def instrs(self):
         return self._instructions
 
+    def get_bb_id(self):
+        i = self._instructions[0]
+        if i.is_block() or i.is_jump():
+            return 0
+        return id(i)
+
     def __str__(self):
         return "<block> {...}"
 
@@ -138,6 +144,12 @@ class Instruction(TextNode):
         """
         return False
 
+    def insides(self, links):
+        """
+        Returns inside blocks to jump there if any or [].
+        """
+        return []
+
 class RetInstruction(Instruction):
     """
     A return instruction. Always in a single block.
@@ -152,6 +164,7 @@ class ForInstruction(Instruction):
     """
     def __init__(self, header, content):
         Instruction.__init__(self, "for %s {...}" % header)
+        self._header = header
         if not content.is_block():
             self._content = Block()
             self._content.add(content)
@@ -166,6 +179,12 @@ class ForInstruction(Instruction):
 
     def block(self):
         return self._content
+
+    def insides(self, links):
+        bid = self._content.get_bb_id()
+        links[(bid, bid)] = 'for %s' % self._header
+        js = [(bid, '')]
+        return js
 
 class MacroLoopInstruction(ForInstruction):
     """
@@ -182,7 +201,7 @@ class GoToInstruction(Instruction):
         """
         label - where to jump
         """
-        Instruction.__init__(self, "goto %s" % label)
+        Instruction.__init__(self, "goto %s;" % label)
         self._label = label
 
     def is_jump(self):
