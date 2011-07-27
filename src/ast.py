@@ -183,8 +183,8 @@ class ForInstruction(Instruction):
     def is_jump(self):
         return True
 
-    def block(self):
-        return self._content
+    def blocks(self):
+        return [self._content]
 
     def insides(self, links):
         bid = self._content.get_bb_id()

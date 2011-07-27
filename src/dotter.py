@@ -52,7 +52,8 @@ def get_leaders(block, leaders):
         if i.is_leader():
             leaders[id(i)] = i
         if i.is_block():
-            get_leaders(i.block(), leaders)
+            for b in i.blocks():
+                get_leaders(b, leaders)
         if i.is_jump():
             next_leader = True
 
@@ -68,7 +69,8 @@ def get_blocks(block, leaders, blocks):
                 bbi = []
             last_leader = i
         if i.is_block():
-            get_blocks(i.block(), leaders, blocks)
+            for b in i.blocks():
+               get_blocks(b, leaders, blocks)
         if not (i.is_block() or i.is_jump()):
             bbi.append(i)
     if last_leader:
@@ -142,29 +144,8 @@ def get_links(block, leaders, blocks, links, root=True):
 
     for i in instrs:
         if i.is_block():
-            get_links(i.block(), leaders, blocks, links, False)
-
-#    for i, p in instructions:
-#        jumps = i.jumps()
-#        if p:
-#            links[(id(p), i.block().get_bb_id())] = ''
-#        else:
-#            links[(START, i.block().get_bb_id())] = ''
-
-#    for i in instrs:
-#        if id(i) in leaders:
-#            id_bb = id(i)
-##            for (l, d) in to_link:
-##                links[(l, id_bb)] = d
-##            to_link = []
-##        bb_links = i.get_links()
-##        for dest, desc in bb_links:
-##            if dest:
-##                links[(id_bb, dest)] = desc
-##            else:
-##                to_link = [(id_bb, ''), (i.block().get_bb_id(), desc)]
-#        if i.is_block():
-#           get_links(i.block(), leaders, blocks, links, False)
+            for b in i.blocks():
+                get_links(b, leaders, blocks, links, False)
 
 def build_dot_string(blocks, links):
     """
