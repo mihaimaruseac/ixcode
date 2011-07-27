@@ -9,7 +9,8 @@ class File():
         self._fcts = {}
 
     def add(self, f):
-        self._fcts['%s' % f.name()] = f
+        if f:
+            self._fcts['%s' % f.name()] = f
 
     def filter(self, functions=[]):
         """
@@ -54,7 +55,8 @@ class Block(Node):
         self._instructions = []
 
     def add(self, i):
-        self._instructions.append(i)
+        if i:
+            self._instructions.append(i)
 
     def __str__(self):
         return "<block> {...}"

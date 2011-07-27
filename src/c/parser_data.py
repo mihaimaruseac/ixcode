@@ -271,8 +271,7 @@ def p_block_0(self, p):
 
 def p_block_content_1(self, p):
     'block_content  :   block_content decl'
-    p[0] = p[1] # TODO: ignore decls?
-    p[0].add(p[2])
+    p[0] = p[1] # ignore decls
 
 def p_block_content_2(self, p):
     'block_content  :   block_content instruction'
