@@ -1,6 +1,7 @@
 # IxCode - app for code spelunking :: block diagram
 # Overmind
 
+import dotter
 import lexer
 import parser
 
@@ -20,6 +21,8 @@ def main(filename, functions, opts, arg_err, debug=False):
         returns: None
     """
     ast = get_ast(filename, opts, debug)
+    ast.filter(functions)
+    dotter.dot(ast)
 
 def get_ast(filename, opts, debug=False):
     """
