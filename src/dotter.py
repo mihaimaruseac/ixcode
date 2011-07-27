@@ -118,24 +118,31 @@ def jump_out_of_blocks(instrs, leaders, blocks, links):
         for j in jumps:
             links[(j[0], id(i))] = ''
 
-def link_blocks(instrs, leaders, blocks, links):
+def link_blocks(instrs, leaders, blocks, links, root=True):
     ll = None
     for i in instrs:
         if id(i) in leaders:
             if ll:
                 links[(id(ll), id(i))] = ''
-            else:
+            elif root:
                 links[(START, id(i))] = ''
             ll = i
         if i.is_return():
             links[(id(i), END)] = ''
 
-def get_links(block, leaders, blocks, links):
+    if root:
+        links[(id(ll), END)] = ''
+
+def get_links(block, leaders, blocks, links, root=True):
     instrs = block.instrs()
 
     jump_in_blocks(instrs, leaders, blocks, links)
     jump_out_of_blocks(instrs, leaders, blocks, links)
-    link_blocks(instrs, leaders, blocks, links)
+    link_blocks(instrs, leaders, blocks, links, root)
+
+    for i in instrs:
+        if i.is_block():
+            get_links(i.block(), leaders, blocks, links, False)
 
 #    for i, p in instructions:
 #        jumps = i.jumps()
