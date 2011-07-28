@@ -32,8 +32,10 @@ class Parser():
         Returns a generic AST as given by the ast.py module.
         """
         self.__build()
+        dbg = 1 if self._debug else 0
         with open(self._file) as f:
-            ast = self._parser.parse(lexer=self._lex, input=f.read(), debug=1)
+            ast = self._parser.parse(lexer=self._lex, input=f.read(),
+                    debug=dbg)
         return ast
 
     def p_error(self, p):

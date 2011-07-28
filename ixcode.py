@@ -71,9 +71,14 @@ def build_parser():
             dest='type',
             choices=__FILETYPES__)
 
+    parser.add_option('-d', '--debug',
+            help='debug grammar',
+            dest='debug',
+            action='store_true')
+
     return parser
 
-def main(debug):
+def main():
     """
     Main entry point.
     """
@@ -87,8 +92,11 @@ def main(debug):
     if not os.path.isfile(filename):
         error('%s - No such file' % filename)
     opts.type = check_type(filename, opts.type, error)
+    debug = not opts.debug
+    del opts.debug
+    print debug
     ixcode.main(filename, functions, opts, error, debug)
 
 if __name__ == '__main__':
-    main(True) # Change to False when releasing - disable debugging mode
+    main()
 
