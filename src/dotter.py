@@ -64,7 +64,7 @@ class BB:
                 label = unsolved_jumps[bid]
                 for b in blocks:
                     if blocks[b].labeled(label):
-                        links[bid, b] = 'jmp'
+                        links[bid, b] = ''
             return []
 
         instrs = block.instrs()
@@ -86,9 +86,9 @@ class BB:
                         leaders, links, visited, unsolved_jumps))
                 new_block = self.build_new_BB(blocks)
                 for b in subblocks:
-                    links[(b.bid, new_block.bid)] = 'l'
+                    links[(b.bid, new_block.bid)] = ''
                 if i.pass_through():
-                    links[(self.bid, new_block.bid)] = 'p'
+                    links[(self.bid, new_block.bid)] = ''
                 return new_block.set_istream(block, blocks, leaders, links,
                         visited, unsolved_jumps)
             else:
@@ -107,7 +107,7 @@ class BB:
                                 leaders, links, visited[:-1], unsolved_jumps)
                         new_block = self.build_new_BB(blocks)
                         for b in subblocks:
-                            links[(b.bid, new_block.bid)] = 'v'
+                            links[(b.bid, new_block.bid)] = ''
                         return [new_block]
                 self._instrs.append(i)
 
