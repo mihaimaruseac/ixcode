@@ -71,9 +71,6 @@ class Block(Node):
     def instrs(self):
         return self._instructions
 
-    def get_bb_id(self):
-        return self._bid
-
     def __str__(self):
         return "<block> {...}"
 
@@ -115,7 +112,8 @@ class TextNode(Node):
 
 class Expression(TextNode):
     """
-    A simple expression, a subpart of an instruction.
+    A simple expression, a subpart of an instruction. A TextNode for all
+    purposes of this program.
     """
     pass
 
@@ -156,22 +154,28 @@ class Instruction(TextNode):
         return False
 
     def is_return(self):
+        """
+        True if this is a return instruction.
+        """
         return False
 
     def is_goto(self):
+        """
+        True if this is a goto instruction.
+        """
         return False
 
     def is_label(self):
+        """
+        True if this is a label instruction.
+        """
         return False
 
     def pass_through(self):
+        """
+        True if this block can be skipped.
+        """
         return False
-
-    def insides(self, links):
-        """
-        Returns inside blocks to jump there if any or [].
-        """
-        return []
 
 class RetInstruction(Instruction):
     """
@@ -215,15 +219,9 @@ class ForInstruction(Instruction):
     def pass_through(self):
         return True
 
-    def insides(self, links):
-        bid = self._content.get_bb_id()
-        links[(bid, bid)] = 'for %s' % self._header
-        js = [(bid, '')]
-        return js
-
 class MacroLoopInstruction(ForInstruction):
     """
-    A macro which represents a loop. Guessed.
+    A macro which represents a loop. Guessed. Otherwise, a simple for
     """
     def __init__(self, header, content):
         ForInstruction.__init__(self, "#loop %s" % header, content)
@@ -246,6 +244,9 @@ class GoToInstruction(Instruction):
         return True
 
     def label(self):
+        """
+        Returns label to jump to.
+        """
         return self._label
 
 class LabelInstruction(Instruction):
@@ -264,6 +265,9 @@ class LabelInstruction(Instruction):
         return True
 
     def label(self):
+        """
+        Returns label text.
+        """
         return '%s' % self._label
 
 class BlockInstruction(Instruction):
@@ -312,10 +316,4 @@ class IfInstruction(Instruction):
 
     def blocks(self):
         return [(self._true, 'if %s' % self._cond), (self._false, 'else')]
-
-    def insides(self, links):
-        bid_true = self._true.get_bb_id()
-        bid_false = self._false.get_bb_id()
-        js = [(bid_true, 'if %s' % self._cond), (bid_false, 'else')]
-        return js
 

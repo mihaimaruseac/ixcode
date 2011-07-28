@@ -33,6 +33,26 @@ class BB:
 
     def set_istream(self, block, blocks, leaders, links, visited=[],
             unsolved_jumps={}):
+        """
+        Receives the instruction stream and returns the entire Basic Block
+        hierarchy using the passed-in dictionaries and lists.
+
+        Basically, if we are the starting node recourse with the same
+        instruction stream, collect the last node and link it to the exit
+        point.
+
+        Otherwise, check each instruction in stream and either add it to the
+        current block or create another. When creating another either switch
+        to a new instruction stream (the instruction was a block) or use the
+        same (the instruction caused a break in block flow).
+
+        Create virtual nodes in several places to ensure all links are ok. For
+        example, if not using this the if would have three outbound nodes, but
+        it really has two.
+
+        This method may contain several bugs, they will be discovered through
+        testing. It is the hardest part of this program.
+        """
         if self.bid == START:
             new_block = self.build_new_BB(blocks)
             links[(self.bid, new_block.bid)] = ''
@@ -140,30 +160,6 @@ def get_leaders(block, leaders):
                 get_leaders(b[0], leaders)
         if i.is_jump():
             next_leader = True
-
-def get_blocks(block, leaders, blocks):
-    instrs = block.instrs()
-
-    last_leader = None
-    bbi = []
-    for i in instrs:
-        if id(i) in leaders:
-            if last_leader:
-                b = BB(id(last_leader), last_leader, bbi)
-                blocks[b.bid] = b
-                bbi = []
-            last_leader = i
-        if i.is_block():
-            for b in i.blocks():
-               get_blocks(b, leaders, blocks)
-        else:
-            bbi.append(i)
-    if last_leader:
-        b = BB(id(last_leader), last_leader, bbi)
-        blocks[b.bid] = b
-    else:
-        b = BB(block.get_bb_id(), None, instrs)
-        blocks[block.get_bb_id()] = b
 
 def build_dot_string(blocks, links):
     """
