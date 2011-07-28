@@ -53,12 +53,12 @@ class BB:
 
             if i.is_block():
                 subblocks = []
-                for b in i.blocks():
+                for b, t in i.blocks():
                     new_block = BB()
                     blocks[new_block.bid] = new_block
                     if i.is_loop():
                         links[(new_block.bid, new_block.bid)] = i.loop_label()
-                    links[(self.bid, new_block.bid)] = ''
+                    links[(self.bid, new_block.bid)] = t
                     subblocks.extend(new_block.set_istream(b, blocks,
                         leaders, links, visited, unsolved_jumps))
                 new_block = BB()
@@ -137,7 +137,7 @@ def get_leaders(block, leaders):
             leaders[id(i)] = i
         if i.is_block():
             for b in i.blocks():
-                get_leaders(b, leaders)
+                get_leaders(b[0], leaders)
         if i.is_jump():
             next_leader = True
 

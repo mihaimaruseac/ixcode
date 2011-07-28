@@ -207,7 +207,7 @@ class ForInstruction(Instruction):
         return True
 
     def blocks(self):
-        return [self._content]
+        return [(self._content, '')]
 
     def loop_label(self):
         return 'for %s' % self._header
@@ -311,7 +311,7 @@ class IfInstruction(Instruction):
         return True
 
     def blocks(self):
-        return [self._true, self._false]
+        return [(self._true, 'if %s' % self._cond), (self._false, 'else')]
 
     def insides(self, links):
         bid_true = self._true.get_bb_id()
