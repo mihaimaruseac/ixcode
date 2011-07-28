@@ -51,12 +51,20 @@ class Block(Node):
     """
     A block of several instructions.
     """
-    def __init__(self):
+    __bid = -100
+    def __init__(self, auto_assign_id=False):
         self._instructions = []
+        self._bid = 0
+        self._aaid = auto_assign_id
+        if self._aaid:
+            self._bid = Block.__bid
+            Block.__bid -= 1
 
     def add(self, i):
         if i:
             if not self._instructions:
+                if not self._aaid:
+                    self._bid = id(i)
                 i.set_leader()
             self._instructions.append(i)
 
@@ -64,10 +72,7 @@ class Block(Node):
         return self._instructions
 
     def get_bb_id(self):
-        i = self._instructions[0]
-        if i.is_block() or i.is_jump():
-            return 0
-        return id(i)
+        return self._bid
 
     def __str__(self):
         return "<block> {...}"
@@ -144,7 +149,16 @@ class Instruction(TextNode):
         """
         return False
 
+    def is_loop(self):
+        """
+        Returns True if this is a loop.
+        """
+        return False
+
     def is_return(self):
+        return False
+
+    def pass_through(self):
         return False
 
     def insides(self, links):
@@ -183,8 +197,17 @@ class ForInstruction(Instruction):
     def is_jump(self):
         return True
 
+    def is_loop(self):
+        return True
+
     def blocks(self):
         return [self._content]
+
+    def loop_label(self):
+        return 'for %s' % self._header
+
+    def pass_through(self):
+        return True
 
     def insides(self, links):
         bid = self._content.get_bb_id()
@@ -248,9 +271,33 @@ class IfInstruction(Instruction):
     """
     def __init__(self, cond, true, false):
         Instruction.__init__(self, "if (%s){...}" % cond)
-        self._true = true
-        self._false = false
+        self._cond = cond
+
+        if not true.is_block():
+            self._true = Block()
+            self._true.add(true)
+        else:
+            self._true = true.block().block()
+        if not false:
+            self._false = Block(auto_assign_id=True)
+        elif not false.is_block():
+            self._false = Block()
+            self._false.add(false)
+        else:
+            self._false = false.block().block()
 
     def is_jump(self):
         return True
+
+    def is_block(self):
+        return True
+
+    def blocks(self):
+        return [self._true, self._false]
+
+    def insides(self, links):
+        bid_true = self._true.get_bb_id()
+        bid_false = self._false.get_bb_id()
+        js = [(bid_true, 'if %s' % self._cond), (bid_false, 'else')]
+        return js
 
