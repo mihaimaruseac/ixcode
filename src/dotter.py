@@ -136,6 +136,9 @@ class BB:
             s += '%s\\n' % tmp
         return s
 
+    def empty(self):
+        return self._instrs == [] and self.bid >= 0
+
     def instrs(self):
         return self._instrs
 
@@ -186,6 +189,49 @@ def build_dot_string(blocks, links):
 
     return s + '}\n'
 
+def get_inout_blocks(bid, links, ix):
+    """
+    Return blocks linked to block bid. ix gives the direction.
+    """
+    bs = []
+    for l in links:
+        if l[ix] == bid:
+            bs.append(l[1 - ix])
+    return bs
+
+def get_in_blocks(bid, links):
+    """
+    Returns blocks with links to block with id bid.
+    """
+    return get_inout_blocks(bid, links, 1)
+
+def get_out_blocks(bid, links):
+    """
+    Returns blocks linked to by block with id bid.
+    """
+    return get_inout_blocks(bid, links, 0)
+
+def cleanup(blocks, links):
+    """
+    Removes useless empty nodes from the tree. They were used before to ensure
+    proper construction of tree but not all of them are useful after the
+    entire tree is build. Removes nodes with empty content.
+    """
+    to_del = []
+    for b in blocks:
+        if blocks[b].empty():
+            outblocks = get_out_blocks(b, links)
+            if len(outblocks) == 1: # if otherwise we should (maybe?) raise an error
+                inblocks = get_in_blocks(b, links)
+                for ib in inblocks:
+                    s = links[(ib, b)] + links[(b, outblocks[0])]
+                    del links[(ib, b)]
+                    del links[(b, outblocks[0])]
+                    links[(ib, outblocks[0])] = s
+                to_del.append(b)
+    for d in to_del:
+        del blocks[d]
+
 def dot(fcts):
     """
     Transform each function to the graphical representation.
@@ -205,6 +251,9 @@ def dot(fcts):
         blocks = {START:BB(START), END:BB(END)}
         links = {}
         blocks[START].set_istream(block, blocks, leaders, links)
+
+        # cleanup tree
+        cleanup(blocks, links)
 
         s = build_dot_string(blocks, links)
 
