@@ -26,11 +26,15 @@ class BB:
             return True
         return False
 
+    def build_new_BB(self, blocks):
+        new_block = BB()
+        blocks[new_block.bid] = new_block
+        return new_block
+
     def set_istream(self, block, blocks, leaders, links, visited=[],
             unsolved_jumps={}):
         if self.bid == START:
-            new_block = BB()
-            blocks[new_block.bid] = new_block
+            new_block = self.build_new_BB(blocks)
             links[(self.bid, new_block.bid)] = ''
             last_blocks = new_block.set_istream(block, blocks, leaders, links,
                     visited, unsolved_jumps)
@@ -54,15 +58,13 @@ class BB:
             if i.is_block():
                 subblocks = []
                 for b, t in i.blocks():
-                    new_block = BB()
-                    blocks[new_block.bid] = new_block
+                    new_block = self.build_new_BB(blocks)
                     if i.is_loop():
                         links[(new_block.bid, new_block.bid)] = i.loop_label()
                     links[(self.bid, new_block.bid)] = t
                     subblocks.extend(new_block.set_istream(b, blocks,
                         leaders, links, visited, unsolved_jumps))
-                new_block = BB()
-                blocks[new_block.bid] = new_block
+                new_block = self.build_new_BB(blocks)
                 for b in subblocks:
                     links[(b.bid, new_block.bid)] = 'l'
                 if i.pass_through():
@@ -75,8 +77,7 @@ class BB:
                         self._leader = i
                     else:
                         # time for a new block
-                        new_block = BB()
-                        blocks[new_block.bid] = new_block
+                        new_block = self.build_new_BB(blocks)
                         last = self._instrs[-1]
                         if not last.is_goto():
                             links[(self.bid, new_block.bid)] = ''
@@ -84,8 +85,7 @@ class BB:
                             unsolved_jumps[self.bid] = last.label()
                         subblocks = new_block.set_istream(block, blocks,
                                 leaders, links, visited[:-1], unsolved_jumps)
-                        new_block = BB()
-                        blocks[new_block.bid] = new_block
+                        new_block = self.build_new_BB(blocks)
                         for b in subblocks:
                             links[(b.bid, new_block.bid)] = 'v'
                         return [new_block]
