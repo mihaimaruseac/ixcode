@@ -158,6 +158,12 @@ class Instruction(TextNode):
     def is_return(self):
         return False
 
+    def is_goto(self):
+        return False
+
+    def is_label(self):
+        return False
+
     def pass_through(self):
         return False
 
@@ -236,6 +242,12 @@ class GoToInstruction(Instruction):
     def is_jump(self):
         return True
 
+    def is_goto(self):
+        return True
+
+    def label(self):
+        return self._label
+
 class LabelInstruction(Instruction):
     """
     A label. Always the start of a new block.
@@ -247,6 +259,12 @@ class LabelInstruction(Instruction):
         Instruction.__init__(self, "%s:" % label)
         self._label = label
         self._leader = True
+
+    def is_label(self):
+        return True
+
+    def label(self):
+        return '%s' % self._label
 
 class BlockInstruction(Instruction):
     """

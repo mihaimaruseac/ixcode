@@ -20,16 +20,30 @@ class BB:
         self._leader = None
         self._instrs = []
 
-    def set_istream(self, block, blocks, leaders, links, visited=[]):
+    def labeled(self, label):
+        if self._leader and self._leader.is_label() and \
+           self._leader.label() == label:
+            return True
+        return False
+
+    def set_istream(self, block, blocks, leaders, links, visited=[],
+            unsolved_jumps={}):
         if self.bid == START:
             new_block = BB()
             blocks[new_block.bid] = new_block
             links[(self.bid, new_block.bid)] = ''
             last_blocks = new_block.set_istream(block, blocks, leaders, links,
-                    visited)
+                    visited, unsolved_jumps)
             for b in last_blocks:
                 links[(b.bid, END)] = ''
-            return
+            import pdb
+            pdb.set_trace()
+            for bid in unsolved_jumps:
+                label = unsolved_jumps[bid]
+                for b in blocks:
+                    if blocks[b].labeled(label):
+                        links[bid, b] = 'jmp'
+            return []
 
         instrs = block.instrs()
 
@@ -48,7 +62,7 @@ class BB:
                         links[(new_block.bid, new_block.bid)] = i.loop_label()
                     links[(self.bid, new_block.bid)] = ''
                     subblocks.extend(new_block.set_istream(b, blocks,
-                        leaders, links, visited))
+                        leaders, links, visited, unsolved_jumps))
                 new_block = BB()
                 blocks[new_block.bid] = new_block
                 for b in subblocks:
@@ -56,7 +70,7 @@ class BB:
                 if i.pass_through():
                     links[(self.bid, new_block.bid)] = 'p'
                 return new_block.set_istream(block, blocks, leaders, links,
-                        visited)
+                        visited, unsolved_jumps)
             else:
                 if i.is_leader():
                     if not self._leader:
@@ -66,16 +80,29 @@ class BB:
                         new_block = BB()
                         blocks[new_block.bid] = new_block
                         # TODO: check if allowed
-                        links[(self.bid, new_block.bid)] = ''
+                        last = self._instrs[-1]
+                        if not last.is_goto():
+                            links[(self.bid, new_block.bid)] = ''
+                        else:
+                            # TODO: do the goto
+                            unsolved_jumps[self.bid] = last.label()
                         subblocks = new_block.set_istream(block, blocks,
-                                leaders, links, visited[:-1])
+                                leaders, links, visited[:-1], unsolved_jumps)
                         new_block = BB()
                         blocks[new_block.bid] = new_block
                         for b in subblocks:
                             links[(b.bid, new_block.bid)] = 'v'
                         return [new_block]
                 self._instrs.append(i)
-        return [self]
+
+        if not self._instrs:
+            return [self]
+
+        last = self._instrs[-1]
+        if not last.is_goto():
+            return [self]
+        unsolved_jumps[self.bid] = last.label()
+        return []
 
     def description(self):
         s = ''
