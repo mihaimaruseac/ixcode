@@ -232,11 +232,12 @@ def cleanup(blocks, links):
     for d in to_del:
         del blocks[d]
 
-def dot(fcts):
+def dot(fcts, opts):
     """
     Transform each function to the graphical representation.
 
         fcts - list of functions to transform
+        opts - user options
         --
         returns: None
     """
@@ -257,8 +258,10 @@ def dot(fcts):
 
         s = build_dot_string(blocks, links)
 
-        filename = '%s.dot' % fname
+        if not os.path.exists(opts.outdir):
+            os.system('mkdir %s' % opts.outdir)
+        filename = '%s/%s.dot' % (opts.outdir, fname)
         with open(filename, 'w') as f:
             f.write(s)
-        os.system('dot -Tpng %s > %s.png' % (filename, fname))
+        os.system('dot -Tpng %s > %s/%s.png' % (filename, opts.outdir, fname))
 

@@ -76,6 +76,11 @@ def build_parser():
             dest='debug',
             action='store_true')
 
+    parser.add_option('-o', '--outdir',
+            help='output directory',
+            default='.',
+            dest='outdir')
+
     return parser
 
 def main():

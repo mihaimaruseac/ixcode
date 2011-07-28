@@ -22,7 +22,7 @@ def main(filename, functions, opts, arg_err, debug=False):
     """
     ast = get_ast(filename, opts, debug)
     ast.filter(functions)
-    dotter.dot(ast)
+    dotter.dot(ast, opts)
 
 def get_ast(filename, opts, debug=False):
     """
