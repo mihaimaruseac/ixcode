@@ -94,7 +94,6 @@ def main():
     opts.type = check_type(filename, opts.type, error)
     debug = not opts.debug
     del opts.debug
-    print debug
     ixcode.main(filename, functions, opts, error, debug)
 
 if __name__ == '__main__':
