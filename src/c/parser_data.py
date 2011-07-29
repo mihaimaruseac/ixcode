@@ -11,11 +11,19 @@ def _p(msg):
 start = 'file'
 
 precedence = (
-        ('nonassoc', 'LT', 'LE', 'EQ', 'GE', 'GT'),
+        ('right', 'CONDOP'),
+        ('left', 'LOR'),
+        ('left', 'LAND'),
+        ('left', 'OR'),
+        ('left', 'XOR'),
+        ('left', 'AND'),
+        ('nonassoc', 'NE', 'EQ'),
+        ('nonassoc', 'LT', 'LE', 'GE', 'GT'),
+        ('left', 'LSHIFT', 'RSHIFT'),
         ('left', 'PLUS', 'MINUS'),
         ('left', 'TIMES', 'DIVIDE', 'MOD'),
-        ('right', 'POINTER'),
-        ('right', 'UMINUS'),
+        ('right', 'POINTER', 'UMINUS', 'PLUSPLUS', 'MINUSMINUS', 'NOT',
+            'LNOT', 'SIZEOF'),
         ('right', 'ID'),
         )
 
@@ -166,11 +174,19 @@ def p_expression_2(self, p):
                 |   expression EQ expression
                 |   expression GE expression
                 |   expression GT expression
+                |   expression NE expression
                 |   expression PLUS expression
                 |   expression MINUS expression
                 |   expression TIMES expression
                 |   expression DIVIDE expression
                 |   expression MOD expression
+                |   expression LSHIFT expression
+                |   expression RSHIFT expression
+                |   expression XOR expression
+                |   expression LOR expression
+                |   expression LAND expression
+                |   expression AND expression
+                |   expression OR expression
     """
     p[0] = ast.Expression("%s %s %s" % (p[1], p[2], p[3]))
 
@@ -186,6 +202,25 @@ def p_expression_4(self, p):
                 |   MINUSMINUS arg
     """
     p[0] = ast.TextNode("%s%s" % (p[1], p[2]))
+
+def p_expression_5(self, p):
+    """
+    expression  :   NOT expression
+                |   LNOT expression
+    """
+    p[0] = ast.TextNode("%s%s" % (p[1], p[2]))
+
+def p_expression_6(self, p):
+    'expression :   LPAREN expression RPAREN'
+    p[0] = ast.TextNode("(%s)" % p[2])
+
+def p_expression_7(self, p):
+    'expression :   SIZEOF expression'
+    p[0] = ast.TextNode('%s %s' % (p[1], p[2]))
+
+#def p_expression_8(self, p):
+#    'expression :   expression CONDOP expression COLON expression'
+#    p[0] = ast.TextNode('%s ? %s : %s' % (p[1], p[3], p[5]))
 
 def p_arg_1(self, p):
     'arg   :   arg_name'
@@ -218,6 +253,7 @@ def p_constant_1(self, p):
                 |   INT_CONST_HEX
                 |   INT_CONST_OCT
                 |   FLOAT_CONST
+                |   CHAR_CONST
     """
     p[0] = ast.TextNode('%s' % p[1])
 
@@ -328,6 +364,18 @@ def p_for_header_1(self, p):
     # TODO: other for expressions
 
 def p_initializer(self, p):
-    'initializer    :   arg EQUALS expression'
-    p[0] = ast.Expression('%s = %s' % (p[1], p[3]))
+    """
+    initializer :   arg EQUALS expression
+                |   arg PLUSEQUAL expression
+                |   arg MINUSEQUAL expression
+                |   arg TIMESEQUAL expression
+                |   arg MODEQUAL expression
+                |   arg DIVEQUAL expression
+                |   arg LSHIFTEQUAL expression
+                |   arg RSHIFTEQUAL expression
+                |   arg ANDEQUAL expression
+                |   arg OREQUAL expression
+                |   arg XOREQUAL expression
+    """
+    p[0] = ast.Expression('%s %s %s' % (p[1], p[2], p[3]))
 

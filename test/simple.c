@@ -97,7 +97,9 @@ void ifs()
 				goto l;
 	} else {
 		if (i < 3) {
-			j++;
+			j = 2 + 3;
+			j = 2 & 3;
+			j = 2 || 3;
 		}
 
 		if (i < 4) {
@@ -176,6 +178,7 @@ int many_rets()
 	else
 		return 4;
 	i++;
+	i >>= 2 + 3 ^ 4;
 	return 2;
 }
 
