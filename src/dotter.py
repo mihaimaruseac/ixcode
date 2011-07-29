@@ -84,7 +84,7 @@ class BB:
                 continue
             visited.append(i)
 
-            if i.is_block():
+            if i.has_blocks():
                 subblocks = []
                 for b, t in i.blocks():
                     new_block = self.build_new_BB(blocks)
@@ -164,7 +164,7 @@ def get_leaders(block, leaders):
             i.set_leader()
         if i.is_leader():
             leaders[id(i)] = i
-        if i.is_block():
+        if i.has_blocks():
             for b in i.blocks():
                 get_leaders(b[0], leaders)
         if i.is_jump():

@@ -137,7 +137,14 @@ class Instruction(TextNode):
 
     def is_block(self):
         """
-        Returns True if this is a block.
+        Returns True if this is a block of instructions.
+        """
+        return False
+
+    def has_blocks(self):
+        """
+        Returns True if this instruction contains blocks of other
+        instructions. If True, they can be accessed via blocks().
         """
         return False
 
@@ -201,7 +208,7 @@ class ForInstruction(Instruction):
         else:
             self._content = content.block().block()
 
-    def is_block(self):
+    def has_blocks(self):
         return True
 
     def is_jump(self):
@@ -284,6 +291,12 @@ class BlockInstruction(Instruction):
     def is_block(self):
         return True
 
+    def has_blocks(self):
+        return True
+
+    def blocks(self):
+        return [(self._block, '')]
+
     def is_jump(self):
         return True
 
@@ -301,7 +314,7 @@ class IfInstruction(Instruction):
         else:
             self._true = true.block().block()
         if not false:
-            self._false = Block(auto_assign_id=True)
+            self._false = Block()
         elif not false.is_block():
             self._false = Block()
             self._false.add(false)
@@ -311,7 +324,7 @@ class IfInstruction(Instruction):
     def is_jump(self):
         return True
 
-    def is_block(self):
+    def has_blocks(self):
         return True
 
     def blocks(self):
