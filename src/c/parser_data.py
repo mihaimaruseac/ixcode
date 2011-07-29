@@ -278,11 +278,6 @@ def p_block_content_2(self, p):
     p[0] = p[1]
     p[0].add(p[2])
 
-def p_block_content_3(self, p):
-    'block_content  :   block_content if'
-    p[0] = p[1]
-    p[0].add(p[2])
-
 def p_instruction_1(self, p):
     'instruction    :   block'
     p[0] = ast.BlockInstruction(p[1])
@@ -315,25 +310,17 @@ def p_instruction_8(self, p):
     'instruction    :   RETURN  expression SEMI'
     p[0] = ast.RetInstruction("return %s;" % p[2])
 
+def p_instruction_9(self, p):
+    'instruction    :   IF LPAREN expression RPAREN instruction'
+    p[0] = ast.IfInstruction(p[3], p[5], None)
+
+def p_instruction_10(self, p):
+    'instruction    :   IF LPAREN expression RPAREN instruction ELSE instruction'
+    p[0] = ast.IfInstruction(p[3], p[5], p[7])
+
 def p_label(self, p):
     'label  :   ID COLON'
     p[0] = ast.TextNode("%s" % p[1])
-
-def p_if_1(self, p):
-    'if :   IF LPAREN expression RPAREN instruction'
-    p[0] = ast.IfInstruction(p[3], p[5], None)
-
-def p_if_2(self, p):
-    'if :   IF LPAREN expression RPAREN if'
-    p[0] = ast.IfInstruction(p[3], p[5], None)
-
-def p_if_3(self, p):
-    'if :   IF LPAREN expression RPAREN instruction ELSE instruction'
-    p[0] = ast.IfInstruction(p[3], p[5], p[7])
-
-def p_if_4(self, p):
-    'if :   IF LPAREN expression RPAREN instruction ELSE if'
-    p[0] = ast.IfInstruction(p[3], p[5], p[7])
 
 def p_for_header_1(self, p):
     'for_header :   LPAREN initializer SEMI expression SEMI expression RPAREN'
