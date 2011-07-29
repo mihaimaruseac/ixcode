@@ -156,6 +156,25 @@ void ifs()
 			}
 		}
 	}
+
+	i++;
+
+	if (i)
+		i++;
+	i--;
+}
+
+int many_rets()
+{
+	int i;
+
+	return 1;
+	if (1)
+		return 3;
+	else
+		return 4;
+	i++;
+	return 2;
 }
 
 int main(int argc, char **argv)

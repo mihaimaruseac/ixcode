@@ -104,6 +104,16 @@ class BB:
                 if i.is_leader():
                     if not self._leader:
                         self._leader = i
+                        if i.is_return():
+                            links[(self.bid, END)] = ''
+                            self._instrs.append(i)
+                            new_block = self.build_new_BB(blocks)
+                            subblocks = new_block.set_istream(block, blocks,
+                                    leaders, links, visited, unsolved_jumps)
+                            new_block = self.build_new_BB(blocks)
+                            for b in subblocks:
+                                links[(b.bid, new_block.bid)] = ''
+                            return [new_block]
                     else:
                         # time for a new block
                         new_block = self.build_new_BB(blocks)
@@ -124,6 +134,9 @@ class BB:
             return [self]
 
         last = self._instrs[-1]
+        if last.is_return():
+            links[(self.bid, END)] = ''
+            return []
         if not last.is_goto():
             return [self]
         unsolved_jumps[self.bid] = last.label()
