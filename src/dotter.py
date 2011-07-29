@@ -198,7 +198,10 @@ def build_dot_string(blocks, links):
     s = 'digraph{\n\tnode [shape=box];\n'
     for b in blocks.values():
         descr = b.description()
-        if descr:
+        if b.bid < 0:
+            s += '\t%d [label="%s", style="filled", color="#f7007f"];\n' %\
+                    (b.bid, descr)
+        elif descr:
             s += '\t%d [label="%s"];\n' % (b.bid, descr)
         else:
             s += '\t%d [label="", shape="point"];\n' % b.bid
@@ -207,7 +210,15 @@ def build_dot_string(blocks, links):
         d = links[l]
         s += '\t%d -> %d' % l
         if d:
-            s += ' [label="%s"]' % fix(d)
+            if d[:5] == 'while':
+                color = '#136136'
+            elif d[:2] == 'if':
+                color = '#ff7700'
+            elif d[:4] == 'else':
+                color = '#0077ff'
+            else:
+                color = '#c00fee'
+            s += ' [label="%s", color="%s"]' % (fix(d), color)
         s += ';\n'
 
     return s + '}\n'
