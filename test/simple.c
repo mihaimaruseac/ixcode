@@ -182,6 +182,19 @@ int many_rets()
 	return 2;
 }
 
+int test_while()
+{
+	int i;
+
+	i = 0;
+
+	while (i < 5) {
+		i++;
+		if (i > 2)
+			i *= i % 2 ? 5 : 4;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int i;

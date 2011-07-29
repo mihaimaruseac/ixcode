@@ -358,6 +358,10 @@ def p_instruction_10(self, p):
     'instruction    :   IF LPAREN expression RPAREN instruction ELSE instruction'
     p[0] = ast.IfInstruction(p[3], p[5], p[7])
 
+def p_instruction_11(self, p):
+    'instruction    :   WHILE LPAREN expression RPAREN instruction'
+    p[0] = ast.WhileInstruction(p[3], p[5])
+
 def p_label(self, p):
     'label  :   ID COLON'
     p[0] = ast.TextNode("%s" % p[1])

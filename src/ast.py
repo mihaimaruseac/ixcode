@@ -225,6 +225,37 @@ class MacroLoopInstruction(ForInstruction):
     def __init__(self, header, content):
         ForInstruction.__init__(self, "#loop %s" % header, content)
 
+class WhileInstruction(Instruction):
+    """
+    A while instruction. Causes a jump.
+    """
+    def __init__(self, header, content):
+        Instruction.__init__(self, "while (%s) {...}" % header)
+        self._header = header
+        if not content.is_block():
+            self._content = Block()
+            self._content.add(content)
+        else:
+            self._content = content.block().block()
+
+    def has_blocks(self):
+        return True
+
+    def is_jump(self):
+        return True
+
+    def is_loop(self):
+        return True
+
+    def blocks(self):
+        return [(self._content, 'w')]
+
+    def loop_label(self):
+        return 'while (%s)' % self._header
+
+    def pass_through(self):
+        return True
+
 class GoToInstruction(Instruction):
     """
     A goto instruction. Causes a jump.
