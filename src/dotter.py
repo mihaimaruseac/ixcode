@@ -217,27 +217,6 @@ def get_out_blocks(bid, links):
     """
     return get_inout_blocks(bid, links, 0)
 
-def cleanup(blocks, links):
-    """
-    Removes useless empty nodes from the tree. They were used before to ensure
-    proper construction of tree but not all of them are useful after the
-    entire tree is build. Removes nodes with empty content.
-    """
-    to_del = []
-    for b in blocks:
-        if blocks[b].empty():
-            outblocks = get_out_blocks(b, links)
-            if len(outblocks) == 1: # if otherwise we should (maybe?) raise an error
-                inblocks = get_in_blocks(b, links)
-                for ib in inblocks:
-                    s = links[(ib, b)] + links[(b, outblocks[0])]
-                    del links[(ib, b)]
-                    del links[(b, outblocks[0])]
-                    links[(ib, outblocks[0])] = s
-                to_del.append(b)
-    for d in to_del:
-        del blocks[d]
-
 def dot(fcts, opts):
     """
     Transform each function to the graphical representation.
@@ -258,9 +237,6 @@ def dot(fcts, opts):
         blocks = {START:BB(START), END:BB(END)}
         links = {}
         blocks[START].set_istream(block, blocks, leaders, links)
-
-        # cleanup tree
-        cleanup(blocks, links)
 
         s = build_dot_string(blocks, links)
 
