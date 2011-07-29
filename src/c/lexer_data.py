@@ -29,7 +29,7 @@ tokens = keywords + [
         'PLUSPLUS', 'MINUSMINUS',
         'ARROW', 'CONDOP',
         'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET', 'LBRACE', 'RBRACE',
-        'COMMA', 'PERIOD', 'SEMI', 'COLON', 'ELLIPSIS', 'LINECONT', 'PPHASH',
+        'COMMA', 'PERIOD', 'SEMI', 'COLON', 'ELLIPSIS', 'PPHASH',
         'INT_CONST_DEC', 'INT_CONST_OCT', 'INT_CONST_HEX',
         'FLOAT_CONST', 'CHAR_CONST', 'STRING_LITERAL'
         ]
@@ -70,13 +70,6 @@ def t_NEWLINE(self, t):
     Increment line count.
     """
     t.lexer.lineno += t.value.count('\n')
-
-def t_LINECONT(self, t):
-    r'\\'
-    """
-    Increment line count.
-    """
-    t.lexer.lineno += 1
 
 def t_PPHASH(self, t):
     r'\#'
