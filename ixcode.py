@@ -83,6 +83,25 @@ def build_parser():
 
     return parser
 
+def remove(basename):
+    """
+    Removes Python files starting with basename adding py and pyc extensions.
+    """
+    fs = ['%s.py' % basename, '%s.pyc' % basename]
+    for f in fs:
+        if os.path.exists(f):
+            os.remove(f)
+
+def cleanup_old_grammars(lang):
+    """
+    Removes old grammar files since we are debugging a new grammar, probably a
+    new entered grammar.
+    """
+    lextab = '%slextab' % lang
+    parsetab = '%sparsetab' % lang
+    remove(lextab)
+    remove(parsetab)
+
 def main():
     """
     Main entry point.
@@ -97,8 +116,10 @@ def main():
     if not os.path.isfile(filename):
         error('%s - No such file' % filename)
     opts.type = check_type(filename, opts.type, error)
-    debug = not opts.debug
+    debug = opts.debug
     del opts.debug
+    if debug:
+        cleanup_old_grammars(opts.type)
     ixcode.main(filename, functions, opts, error, debug)
 
 if __name__ == '__main__':
