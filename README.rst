@@ -22,24 +22,32 @@ given by passing ``-h``.
 A run needs at least the name of the file to be parsed. The user can supply a
 list of interesting functions, only them would be graphed later.
 
+Example:
+
+	./ixcode.py test/simple.c -o outdir
+
+Use the ``-d`` argument only when writing a new grammar.
+
 C. Bugs
 .......
 
 1. Some diagrams are hard to understand without using colors. It is a DOT
    limitation though.
 
-1. This tool assumes that the code compiles successfully. It uses a more
+2. This tool assumes that the code compiles successfully. It uses a more
    permissive grammar than C's and may give wrong results if the code is not
    legal.
+
+3. C grammar is incomplete
 
 D. TODO
 .......
 
-1. Parse enums, structs and unions
+1. Parse enums, structs and unions, finish C grammar
 
-1. Parse and graph ``switch``, ``case``, ``continue`` and ``break``.
+2. Parse and graph ``switch``, ``case``, ``continue`` and ``break``.
 
-1. Add a config file for colors
+3. Add a config file for colors
 
-1. Add support for Python too.
+4. Add support for Python too.
 
