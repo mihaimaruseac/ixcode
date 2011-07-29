@@ -88,8 +88,6 @@ class BB:
                 subblocks = []
                 for b, t in i.blocks():
                     new_block = self.build_new_BB(blocks)
-#                    if i.is_loop():
-#                        links[(new_block.bid, new_block.bid)] = i.loop_label()
                     links[(self.bid, new_block.bid)] = t
                     nbs = new_block.set_istream(b, blocks,
                         leaders, links, visited, unsolved_jumps)
