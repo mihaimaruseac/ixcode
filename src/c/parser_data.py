@@ -11,7 +11,7 @@ def _p(msg):
 start = 'file'
 
 precedence = (
-        ('right', 'CONDOP'),
+        ('right', 'CONDOP', 'COLON'),
         ('left', 'LOR'),
         ('left', 'LAND'),
         ('left', 'OR'),
@@ -218,9 +218,9 @@ def p_expression_7(self, p):
     'expression :   SIZEOF expression'
     p[0] = ast.TextNode('%s %s' % (p[1], p[2]))
 
-#def p_expression_8(self, p):
-#    'expression :   expression CONDOP expression COLON expression'
-#    p[0] = ast.TextNode('%s ? %s : %s' % (p[1], p[3], p[5]))
+def p_expression_8(self, p):
+    'expression :   expression CONDOP expression COLON expression'
+    p[0] = ast.TextNode('%s ? %s : %s' % (p[1], p[3], p[5]))
 
 def p_arg_1(self, p):
     'arg   :   arg_name'

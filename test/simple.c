@@ -178,7 +178,7 @@ int many_rets()
 	else
 		return 4;
 	i++;
-	i >>= 2 + 3 ^ 4;
+	i >>= 2 + 3 ^ 4 + 0 ? 1 : 2;
 	return 2;
 }
 
