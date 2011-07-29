@@ -224,6 +224,10 @@ class MacroLoopInstruction(ForInstruction):
     """
     def __init__(self, header, content):
         ForInstruction.__init__(self, "#loop %s" % header, content)
+        self._header = header
+
+    def loop_label(self):
+        return '%s' % self._header
 
 class WhileInstruction(Instruction):
     """
