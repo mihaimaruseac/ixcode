@@ -248,7 +248,7 @@ class WhileInstruction(Instruction):
         return True
 
     def blocks(self):
-        return [(self._content, 'w')]
+        return [(self._content, '')]
 
     def loop_label(self):
         return 'while (%s)' % self._header
