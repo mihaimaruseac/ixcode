@@ -22,7 +22,7 @@ given by passing ``-h``.
 A run needs at least the name of the file to be parsed. The user can supply a
 list of interesting functions, only them would be graphed later.
 
-Example:
+Example::
 
 	./ixcode.py test/simple.c -o outdir
 
