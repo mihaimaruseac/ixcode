@@ -51,20 +51,12 @@ class Block(Node):
     """
     A block of several instructions.
     """
-    __bid = -100
-    def __init__(self, auto_assign_id=False):
+    def __init__(self):
         self._instructions = []
-        self._bid = 0
-        self._aaid = auto_assign_id
-        if self._aaid:
-            self._bid = Block.__bid
-            Block.__bid -= 1
 
     def add(self, i):
         if i:
             if not self._instructions:
-                if not self._aaid:
-                    self._bid = id(i)
                 i.set_leader()
             self._instructions.append(i)
 
