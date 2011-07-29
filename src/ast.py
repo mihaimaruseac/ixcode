@@ -256,6 +256,17 @@ class WhileInstruction(Instruction):
     def pass_through(self):
         return True
 
+class DoWhileInstruction(WhileInstruction):
+    """
+    A do...while instruction. A while but with no pass_through.
+    """
+    def __init__(self, header, content):
+        WhileInstruction.__init__(self, "do {...} while (%s)" % header, content)
+        self._header = header
+
+    def pass_through(self):
+        return False
+
 class GoToInstruction(Instruction):
     """
     A goto instruction. Causes a jump.

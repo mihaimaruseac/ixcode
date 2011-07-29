@@ -362,6 +362,10 @@ def p_instruction_11(self, p):
     'instruction    :   WHILE LPAREN expression RPAREN instruction'
     p[0] = ast.WhileInstruction(p[3], p[5])
 
+def p_instruction_12(self, p):
+    'instruction    :   DO instruction WHILE LPAREN expression RPAREN SEMI'
+    p[0] = ast.DoWhileInstruction(p[5], p[2])
+
 def p_label(self, p):
     'label  :   ID COLON'
     p[0] = ast.TextNode("%s" % p[1])

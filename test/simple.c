@@ -182,7 +182,7 @@ int many_rets()
 	return 2;
 }
 
-int test_while()
+void test_while()
 {
 	int i;
 
@@ -192,6 +192,29 @@ int test_while()
 		i++;
 		if (i > 2)
 			i *= i % 2 ? 5 : 4;
+	}
+}
+
+void test_do_while()
+{
+	int i;
+
+	i = 0;
+
+	do {
+		i++;
+	} while (i < 5);
+}
+
+void test_loops()
+{
+	int i, j;
+
+	for (i = 0; i < SIZE; i++) {
+		j++;
+		do {
+			j--;
+		} while (j > i);
 	}
 }
 
