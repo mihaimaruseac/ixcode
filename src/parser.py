@@ -69,6 +69,7 @@ def parse_err(msg, line=None):
     """
     print >> sys.stderr, msg
     print >> sys.stderr, '\nIf you think this is an IxCode error report it.'
+    sys.exit(-1)
 
 def parse(lex, filename, lang_dict={}, debug=False):
     """
