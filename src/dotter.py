@@ -6,6 +6,15 @@ import os
 START = -1
 END = -2
 
+def fix(string):
+    """
+    Escapes several entities form the passed in string to ensure proper DOT
+    output.
+    """
+    string = string.replace('\\', '\\\\')
+    string = string.replace('"', '\\"')
+    return string
+
 class BB:
     """
     A basic block. To be displayed by itself in the diagram.
@@ -130,10 +139,7 @@ class BB:
             else:
                 return s
         for i in self._instrs:
-            tmp = '%s' % i
-            tmp = tmp.replace('\\', '\\\\')
-            tmp = tmp.replace('"', '\\"')
-            s += '%s\\n' % tmp
+            s += '%s\\n' % fix('%s' % i)
         return s
 
     def empty(self):
@@ -184,7 +190,7 @@ def build_dot_string(blocks, links):
         d = links[l]
         s += '\t%d -> %d' % l
         if d:
-            s += ' [label="%s"]' % d
+            s += ' [label="%s"]' % fix(d)
         s += ';\n'
 
     return s + '}\n'
