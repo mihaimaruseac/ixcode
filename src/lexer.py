@@ -63,7 +63,8 @@ class Lexer():
         if self._debug:
             self._lex = ply.lex.lex(self)
         else:
-            self._lex = ply.lex.lex(self, optimize=True)
+            self._lex = ply.lex.lex(self, optimize=True,
+                    lextab='%slextab' % self.language)
         self._built = True
 
     def t_error(self, t):

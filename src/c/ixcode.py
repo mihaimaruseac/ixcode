@@ -14,6 +14,7 @@ for k in _d:
 
 lang_lex_dict['tokens'] = _d['tokens']
 lang_lex_dict['states'] = _d['states']
+lang_lex_dict['language'] = 'C'
 
 _d = sys.modules['src.c.parser_data'].__dict__
 lang_parse_dict = {}
@@ -23,4 +24,5 @@ for k in _d:
 
 lang_parse_dict['start'] = _d['start']
 lang_parse_dict['precedence'] = _d['precedence']
+lang_parse_dict['language'] = 'C'
 

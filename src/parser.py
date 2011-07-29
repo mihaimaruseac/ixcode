@@ -25,7 +25,8 @@ class Parser():
         if self._debug:
             self._parser = ply.yacc.yacc(module=self, write_tables=0)
         else:
-            self._parser = ply.yacc.yacc(module=self, optimize=True)
+            self._parser = ply.yacc.yacc(module=self, optimize=True,
+                    tabmodule='%sparsetab' % self.language)
 
     def parse(self):
         """
