@@ -224,6 +224,18 @@ void test_loops()
 	}
 }
 
+void test_continue_and_break()
+{
+	int i;
+
+	for (i = 0; i < SIZE; i++) {
+		if (i < 3)
+			continue;
+		if (i > SIZE - 2)
+			break;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int i;
