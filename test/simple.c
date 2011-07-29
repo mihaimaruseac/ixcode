@@ -208,12 +208,18 @@ void test_do_while()
 
 void test_loops()
 {
-	int i, j;
+	int i, j, k, l;
+
+	k = -5;
 
 	for (i = 0; i < SIZE; i++) {
 		j++;
 		do {
+			k = -j;
 			j--;
+			while (k++) {
+				l = !l;
+			}
 		} while (j > i);
 	}
 }
