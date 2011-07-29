@@ -297,6 +297,10 @@ def p_f_arg_list_3(self, p):
     'f_arg_list :   f_arg_list COMMA decl_specs type_spec variable'
     p[0] = ast.TextNode('%s, %s%s %s' % (p[1], p[3], p[4], p[5]))
 
+def p_f_arg_list_4(self, p):
+    'f_arg_list :   f_arg_list COMMA ELLIPSIS'
+    p[0] = ast.TextNode('%s, ...' % p[1])
+
 def p_block(self, p):
     'block  :   LBRACE block_content RBRACE'
     p[0] = ast.BlockInstruction(p[2])
