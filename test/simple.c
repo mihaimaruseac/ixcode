@@ -94,7 +94,7 @@ void ifs()
 			if (j < 5)
 				j++;
 			else
-				k++;
+				goto l;
 	} else {
 		if (i < 3) {
 			j++;
@@ -108,6 +108,7 @@ void ifs()
 
 		if (i < 4) {
 			if (j < 5) {
+l:
 				j++;
 			} else {
 				k++;
@@ -153,6 +154,7 @@ void ifs()
 				j++;
 			} else {
 				k++;
+				goto l;
 			}
 		}
 	}
