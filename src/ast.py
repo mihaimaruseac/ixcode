@@ -176,6 +176,20 @@ class Instruction(TextNode):
         """
         return False
 
+class BreakInstruction(Instruction):
+    """
+    A break instruction.
+    """
+    def __init__(self):
+        Instruction.__init__(self, 'break')
+
+class ContinueInstruction(Instruction):
+    """
+    A continue instruction.
+    """
+    def __init__(self):
+        Instruction.__init__(self, 'continue')
+
 class RetInstruction(Instruction):
     """
     A return instruction. Always in a single block.

@@ -366,6 +366,14 @@ def p_instruction_12(self, p):
     'instruction    :   DO instruction WHILE LPAREN expression RPAREN SEMI'
     p[0] = ast.DoWhileInstruction(p[5], p[2])
 
+def p_instruction_13(self, p):
+    'instruction    :   BREAK SEMI'
+    p[0] = ast.BreakInstruction()
+
+def p_instruction_14(self, p):
+    'instruction    :   CONTINUE SEMI'
+    p[0] = ast.ContinueInstruction()
+
 def p_label(self, p):
     'label  :   ID COLON'
     p[0] = ast.TextNode("%s" % p[1])
