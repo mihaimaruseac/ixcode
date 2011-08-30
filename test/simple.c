@@ -168,6 +168,21 @@ l:
 	i--;
 }
 
+void test_goto()
+{
+	int i;
+
+	i = 0;
+l:
+	i++;
+	if (i < 5)
+		goto l;
+	i = 42;
+	goto end;
+end:
+	i = i;
+}
+
 int many_rets()
 {
 	int i;
@@ -190,6 +205,28 @@ int many_rets2()
 		return 3;
 	else
 		return 4;
+	i++;
+	i >>= 2 + 3 ^ 4 + 0 ? 1 : 2;
+	return 2;
+}
+
+int many_rets3()
+{
+	int i;
+
+	if (1)
+		return 3;
+	i++;
+	i >>= 2 + 3 ^ 4 + 0 ? 1 : 2;
+	return 2;
+}
+
+int simple_if()
+{
+	int i;
+
+	if (1)
+		i = 0;
 	i++;
 	i >>= 2 + 3 ^ 4 + 0 ? 1 : 2;
 	return 2;
