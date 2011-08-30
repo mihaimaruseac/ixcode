@@ -182,6 +182,19 @@ int many_rets()
 	return 2;
 }
 
+int many_rets2()
+{
+	int i;
+
+	if (1)
+		return 3;
+	else
+		return 4;
+	i++;
+	i >>= 2 + 3 ^ 4 + 0 ? 1 : 2;
+	return 2;
+}
+
 void test_while()
 {
 	int i;
