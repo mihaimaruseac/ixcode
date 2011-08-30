@@ -51,3 +51,11 @@ D. TODO
 
 4. Add support for Python too.
 
+1. Add regexp support for function matching
+
+1. Create a more interesting presentation for the tool.
+
+1. Prepare for ROSEdu CDL
+
+5. Make this list into a GitHub issues series.
+
