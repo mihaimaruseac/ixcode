@@ -176,6 +176,13 @@ class Instruction(TextNode):
         """
         return False
 
+    def has_subblock(self):
+        """
+        True if this instruction contains a block (it is an if, while,
+        do..while or for).
+        """
+        return False
+
 class BreakInstruction(Instruction):
     """
     A break instruction.
@@ -380,5 +387,11 @@ class IfInstruction(Instruction):
         return True
 
     def blocks(self):
+        return [(self._true, 'if %s' % self._cond), (self._false, 'else')]
+
+    def has_subblock(self):
+        return True
+
+    def subblocks(self):
         return [(self._true, 'if %s' % self._cond), (self._false, 'else')]
 

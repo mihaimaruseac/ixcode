@@ -144,6 +144,82 @@ class BB:
         unsolved_jumps[self.bid] = last.label()
         return []
 
+    def set_istream2(self, blocks, leaders, links, instrs, header, exit,
+                    label='', defined_labels={}, undefined_jumps={}):
+        """
+        Receives a list of instructions and adds them to the block tree. Each
+        block added is inserted into blocks with links in links. The leaders
+        list is used to detect splits. also, new blocks can be created by some
+        instructions like if, while, for, return, goto.
+
+        The header and the exit blocks are the blocks before and after the
+        current one. If header is None there was a goto before this block.
+
+        Returns True if the current block has a normal link with the block
+        following it.
+
+        i.is_leader() == i in leaders.values() foreach i in instrs
+        """
+        if header:
+           links[(header.bid, self.bid)] = label
+        lastb = self
+        # get instruction iterator
+        leader_seen = False
+        exit_following = True
+        for i in instrs:
+            assert i.is_leader() == (i in leaders.values())
+            if i.is_leader():
+                if leader_seen:
+                    nb = self.build_new_BB(blocks)
+                    if not exit_following:
+                        lastb = None
+                    istr = instrs[instrs.index(i):]
+                    return nb.set_istream2(blocks, leaders, links, istr,
+                            lastb, exit, defined_labels=defined_labels,
+                            undefined_jumps=undefined_jumps)
+                leader_seen = True
+            if i.has_subblock():
+                h = self.build_new_BB(blocks)
+                links[(self.bid, h.bid)] = '+'
+                e = self.build_new_BB(blocks)
+                lastb = e
+                link_to_end = []
+                new_blocks = []
+                for sb, lbl in i.subblocks():
+                    nb = self.build_new_BB(blocks)
+                    if nb.set_istream2(blocks, leaders, links, sb.instrs(),
+                            h, e, label=lbl, defined_labels=defined_labels,
+                            undefined_jumps=undefined_jumps):
+                        link_to_end.append(nb)
+                continue
+            if i.is_label():
+                l = i.label()
+                defined_labels[l] = self.bid
+                if undefined_jumps.has_key(l):
+                    for b in undefined_jumps[l]:
+                        links[(b, self.bid)] = '@'
+                    del undefined_jumps[l]
+                continue
+            if i.is_goto():
+                l = i.label()
+                if defined_labels.has_key(l):
+                    links[(lastb.bid, defined_labels[l])] = '-'
+                else:
+                    if undefined_jumps.has_key(l):
+                        undefined_jumps[l].append(self.bid)
+                    else:
+                        undefined_jumps[l] = [self.bid]
+                exit_following = False
+                continue
+            self._instrs.append(i)
+            if i.is_return():
+                links[(self.bid, END)] = 'R'
+                return False
+        if exit_following:
+            links[(lastb.bid, exit.bid)] = '>'
+            return True
+        return False # TODO: really?
+
     def description(self):
         s = ''
         if not self._instrs:
@@ -291,9 +367,13 @@ def dot(fcts, opts):
         # get BBs
         blocks = {START:BB(START), END:BB(END)}
         links = {}
-        blocks[START].set_istream(block, blocks, leaders, links)
+#        blocks[START].set_istream(block, blocks, leaders, links)
+        # first instruction block
+        b = blocks[START].build_new_BB(blocks)
+        b.set_istream2(blocks, leaders, links, block.instrs(), blocks[START],
+                blocks[END])
 
-        cleanup(blocks, links)
+#        cleanup(blocks, links)
 
         s = build_dot_string(blocks, links)
 
