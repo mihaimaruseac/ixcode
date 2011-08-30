@@ -29,16 +29,16 @@ class BB:
         self._leader = None
         self._instrs = []
 
+    def build_new_BB(klass, blocks):
+        new_block = BB()
+        blocks[new_block.bid] = new_block
+        return new_block
+
     def labeled(self, label):
         if self._leader and self._leader.is_label() and \
            self._leader.label() == label:
             return True
         return False
-
-    def build_new_BB(self, blocks):
-        new_block = BB()
-        blocks[new_block.bid] = new_block
-        return new_block
 
     def set_istream(self, block, blocks, leaders, links, visited=[],
             unsolved_jumps={}):
