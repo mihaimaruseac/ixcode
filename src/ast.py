@@ -183,6 +183,25 @@ class Instruction(TextNode):
         """
         return False
 
+    def link_blocks(self, header, exit, links):
+        """
+        Links the internal blocks with the header and the exit one, updates
+        the link dictionary.
+        """
+        pass
+
+    def is_break(self):
+        """
+        True if this is a break instruction.
+        """
+        return False
+
+    def is_continue(self):
+        """
+        True if this is a continue instruction.
+        """
+        return True
+
 class BreakInstruction(Instruction):
     """
     A break instruction.
@@ -190,12 +209,18 @@ class BreakInstruction(Instruction):
     def __init__(self):
         Instruction.__init__(self, 'break')
 
+    def is_break(self):
+        return True
+
 class ContinueInstruction(Instruction):
     """
     A continue instruction.
     """
     def __init__(self):
         Instruction.__init__(self, 'continue')
+
+    def is_continue(self):
+        return True
 
 class RetInstruction(Instruction):
     """
@@ -239,6 +264,16 @@ class ForInstruction(Instruction):
     def pass_through(self):
         return True
 
+    def has_subblock(self):
+        return True
+
+    def subblocks(self):
+        return [(self._content, '')]
+
+    def link_blocks(self, header, exit, links):
+        links[(header.bid, exit.bid)] = 'else'
+        links[(exit.bid, header.bid)] = 'for %s' % self._header
+
 class MacroLoopInstruction(ForInstruction):
     """
     A macro which represents a loop. Guessed. Otherwise, a simple for
@@ -249,6 +284,10 @@ class MacroLoopInstruction(ForInstruction):
 
     def loop_label(self):
         return '%s' % self._header
+
+    def link_blocks(self, header, exit, links):
+        links[(header.bid, exit.bid)] = 'else'
+        links[(exit.bid, header.bid)] = '%s' % self._header
 
 class WhileInstruction(Instruction):
     """
@@ -281,6 +320,16 @@ class WhileInstruction(Instruction):
     def pass_through(self):
         return True
 
+    def has_subblock(self):
+        return True
+
+    def subblocks(self):
+        return [(self._content, '')]
+
+    def link_blocks(self, header, exit, links):
+        links[(header.bid, exit.bid)] = 'else'
+        links[(exit.bid, header.bid)] = 'while %s' % self._header
+
 class DoWhileInstruction(WhileInstruction):
     """
     A do...while instruction. A while but with no pass_through.
@@ -291,6 +340,10 @@ class DoWhileInstruction(WhileInstruction):
 
     def pass_through(self):
         return False
+
+    def link_blocks(self, header, exit, links):
+        # No else label :)
+        links[(exit.bid, header.bid)] = 'do ... while %s' % self._header
 
 class GoToInstruction(Instruction):
     """

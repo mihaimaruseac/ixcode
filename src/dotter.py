@@ -187,10 +187,12 @@ class BB:
                 new_blocks = []
                 for sb, lbl in i.subblocks():
                     nb = self.build_new_BB(blocks)
+                    new_blocks.append(nb)
                     if nb.set_istream2(blocks, leaders, links, sb.instrs(),
                             h, e, label=lbl, defined_labels=defined_labels,
                             undefined_jumps=undefined_jumps):
                         link_to_end.append(nb)
+                i.link_blocks(h, e, links)
                 continue
             if i.is_label():
                 l = i.label()
@@ -210,6 +212,9 @@ class BB:
                     else:
                         undefined_jumps[l] = [self.bid]
                 exit_following = False
+                continue
+            if i.is_break():
+                links[(lastb.bid, exit.bid)] = '#'
                 continue
             self._instrs.append(i)
             if i.is_return():
