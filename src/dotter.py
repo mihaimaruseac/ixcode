@@ -145,7 +145,8 @@ class BB:
         return []
 
     def set_istream2(self, blocks, leaders, links, instrs, header, exit,
-                    label='', defined_labels={}, undefined_jumps={}):
+                    pheader, pexit, label='', defined_labels={},
+                    undefined_jumps={}):
         """
         Receives a list of instructions and adds them to the block tree. Each
         block added is inserted into blocks with links in links. The leaders
@@ -175,7 +176,8 @@ class BB:
                         lastb = None
                     istr = instrs[instrs.index(i):]
                     return nb.set_istream2(blocks, leaders, links, istr,
-                            lastb, exit, defined_labels=defined_labels,
+                            lastb, exit, pheader, pexit,
+                            defined_labels=defined_labels,
                             undefined_jumps=undefined_jumps)
                 leader_seen = True
             if i.has_subblock():
@@ -189,7 +191,8 @@ class BB:
                     nb = self.build_new_BB(blocks)
                     new_blocks.append(nb)
                     if nb.set_istream2(blocks, leaders, links, sb.instrs(),
-                            h, e, label=lbl, defined_labels=defined_labels,
+                            h, e, pheader, pexit, label=lbl,
+                            defined_labels=defined_labels,
                             undefined_jumps=undefined_jumps):
                         link_to_end.append(nb)
                 i.link_blocks(h, e, links)
@@ -214,7 +217,7 @@ class BB:
                 exit_following = False
                 continue
             if i.is_break():
-                links[(lastb.bid, exit.bid)] = '#'
+                links[(lastb.bid, pexit.bid)] = '#'
                 continue
             self._instrs.append(i)
             if i.is_return():
@@ -376,7 +379,7 @@ def dot(fcts, opts):
         # first instruction block
         b = blocks[START].build_new_BB(blocks)
         b.set_istream2(blocks, leaders, links, block.instrs(), blocks[START],
-                blocks[END])
+                blocks[END], blocks[START], blocks[END])
 
 #        cleanup(blocks, links)
 
