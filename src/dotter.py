@@ -258,14 +258,17 @@ def get_leaders(block, leaders):
 
     next_leader = False
     for i in instrs:
+        # After a jump
         if next_leader:
             next_leader = False
             i.set_leader()
+        # This is a leader per-se
         if i.is_leader():
             leaders[id(i)] = i
         if i.has_blocks():
             for b in i.blocks():
                 get_leaders(b[0], leaders)
+        # We have a leader after a jump
         if i.is_jump():
             next_leader = True
 
