@@ -1,0 +1,4 @@
+.*.sw*
+*.pyc
+C*tab.py
+parser.out
