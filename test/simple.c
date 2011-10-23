@@ -286,6 +286,22 @@ void test_continue_and_break()
 	}
 }
 
+void test_while_if()
+{
+	int i;
+	
+	i = 0;
+
+	while (i < 100) {
+		i++;
+
+		if (i < 5)
+			i *= 2;
+
+		i-= 2;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int i;
