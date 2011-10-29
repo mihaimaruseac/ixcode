@@ -375,6 +375,9 @@ def dot(fcts, opts):
         leaders = {}
         get_leaders(block, leaders)
 
+        import pdb
+        pdb.set_trace()
+        frepr.visit(None)
         # get BBs
         blocks = {START:BB(START), END:BB(END)}
         links = {}
