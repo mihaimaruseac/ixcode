@@ -1,4 +1,4 @@
-# IxCode - app for code spelunking :: block diagram
+# ixcode - app for code spelunking :: block diagram
 # Transform functions to the corresponding block diagram
 
 import os
@@ -28,6 +28,7 @@ class BB:
             BB.__bid__ += 1
         self._leader = None
         self._instrs = []
+        self._lout = []
 
     def build_new_BB(klass, blocks):
         new_block = BB()
@@ -241,11 +242,34 @@ class BB:
             s += '%s\\n' % fix('%s' % i)
         return s
 
+    def get_link_list(self):
+        return self._lout
+
+    def add_link(self, node):
+        self._lout.append(node)
+
+    def remove_links(self):
+        self._lout = []
+
+    def add_instruction(self, i):
+        self._instrs.append(i)
+
+    def first_instr(self):
+        if not self.instrs():
+            return None
+        return self._instrs[0]
+
+    def add_leader(self, l):
+        self._leader = l
+
     def empty(self):
         return self._instrs == [] and self.bid >= 0
 
     def instrs(self):
         return self._instrs
+
+    def visit (self, visitor):
+        return visitor (self)
 
     def __str__(self):
         return '(%d)%s: [%s]' % (self.bid, self._leader, self._instrs)
@@ -375,9 +399,6 @@ def dot(fcts, opts):
         leaders = {}
         get_leaders(block, leaders)
 
-        import pdb
-        pdb.set_trace()
-        frepr.visit(None)
         # get BBs
         blocks = {START:BB(START), END:BB(END)}
         links = {}
@@ -397,4 +418,74 @@ def dot(fcts, opts):
         with open(filename, 'w') as f:
             f.write(s)
         os.system('dot -Tpng %s > %s/%s.png' % (filename, opts.outdir, fname))
+
+        import ast
+
+        BBlabels = {}
+
+        firstBB = ast.LabelInstruction('%s' % 'START').toBB(BBlabels, BB())
+        lastBB = frepr.toBB(BBlabels, firstBB)
+        ast.LabelInstruction('%s' % 'END').toBB(BBlabels, lastBB)
+
+        BBlabels['END'].remove_links()
+
+        link_labels(BBlabels['START'], BBlabels, [], None)
+        BBlabels['START'].visit(DotVisitor())
+
+def link_labels(node, labels, viz, last_loop):
+
+    viz.append(node)
+
+    i = node.first_instr()
+    if i and i.is_instr() and i.is_loop():
+        last_loop = node
+
+    for next_node in node.get_link_list():
+        if next_node not in viz:
+            link_labels(next_node, labels, viz, last_loop)
+
+    if i and i.is_instr():
+        if i.is_goto():
+            node.remove_links()
+            node.add_link(labels[i.label()])
+        if i.is_return():
+            node.remove_links()
+            node.add_link(labels['END'])
+        if i.is_continue():
+            node.remove_links()
+            node.add_link(last_loop)
+        if i.is_break():
+            last = labels[last_loop]
+            node.remove_links()
+            node.add_link(last)
+
+class DotVisitor:
+
+    def __init__(self):
+        self.g = open('test.dot', 'w')
+        self.g.write('digraph {\n')
+        self.lvl = 0
+        self.viz = []
+        self.description = ''
+
+    def __call__(self, node):
+        self.viz.append(node)
+        self.description += '\t%d [label=\"%s\"' % (node.bid, \
+                fix(node.instrs().__str__()))
+        if not node.instrs() or node.instrs()[0].is_point():
+            self.description += ', shape=\"point\"'
+        self.description += '];\n'
+
+        for next_node in node.get_link_list():
+            self.g.write('\t' + node.bid.__str__() + ' -> ' + \
+                    next_node.bid.__str__() + ';\n')
+            if next_node not in self.viz:
+                self.lvl += 1
+                self(next_node)
+                self.lvl -= 1
+
+        if  self.lvl == 0:
+            self.g.write(self.description)
+            self.g.write('}')
+            self.g.close()
 
