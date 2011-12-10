@@ -1,4 +1,4 @@
-# ixcode - app for code spelunking :: block diagram
+# IxCode - app for code spelunking :: block diagram
 # Transform functions to the corresponding block diagram
 
 import os
@@ -29,6 +29,8 @@ class BB:
         self._leader = None
         self._instrs = []
         self._lout = []
+        self._ignore = False
+        self._lin = []
 
     def build_new_BB(klass, blocks):
         new_block = BB()
@@ -245,19 +247,26 @@ class BB:
     def get_link_list(self):
         return self._lout
 
-    def add_link(self, node):
-        self._lout.append(node)
-
     def remove_links(self):
         self._lout = []
-
-    def add_instruction(self, i):
-        self._instrs.append(i)
 
     def first_instr(self):
         if not self.instrs():
             return None
         return self._instrs[0]
+
+    def is_ignored(self):
+        return self._ignore
+
+    def set_ignore(self):
+        self._ignore = True
+
+    def add_link(self, node):
+        self._lout.append(node)
+        node._lin.append(self)
+
+    def add_instruction(self, i):
+        self._instrs.append(i)
 
     def add_leader(self, l):
         self._leader = l
@@ -420,26 +429,23 @@ def dot(fcts, opts):
         os.system('dot -Tpng %s > %s/%s.png' % (filename, opts.outdir, fname))
 
         import ast
+        Labellist = {}
 
-        BBlabels = {}
+        firstBB = ast.LabelInstruction('%s' % 'START').toBB(Labellist, BB())
+        lastBB = frepr.toBB(Labellist, firstBB)
+        ast.LabelInstruction('%s' % 'END').toBB(Labellist, lastBB)
+#        blocks[0].visit(DotVisitor())
+        Labellist['END'].remove_links()
 
-        firstBB = ast.LabelInstruction('%s' % 'START').toBB(BBlabels, BB())
-        lastBB = frepr.toBB(BBlabels, firstBB)
-        ast.LabelInstruction('%s' % 'END').toBB(BBlabels, lastBB)
+        link_labels(Labellist['START'], Labellist, [], None)
+        Labellist['START'].visit(DotVisitor())
 
-        BBlabels['END'].remove_links()
-
-        link_labels(BBlabels['START'], BBlabels, [], None)
-        BBlabels['START'].visit(DotVisitor())
 
 def link_labels(node, labels, viz, last_loop):
-
     viz.append(node)
-
     i = node.first_instr()
     if i and i.is_instr() and i.is_loop():
         last_loop = node
-
     for next_node in node.get_link_list():
         if next_node not in viz:
             link_labels(next_node, labels, viz, last_loop)
@@ -471,7 +477,7 @@ class DotVisitor:
     def __call__(self, node):
         self.viz.append(node)
         self.description += '\t%d [label=\"%s\"' % (node.bid, \
-                fix(node.instrs().__str__()))
+                fix('%s' % node.instrs()))
         if not node.instrs() or node.instrs()[0].is_point():
             self.description += ', shape=\"point\"'
         self.description += '];\n'
