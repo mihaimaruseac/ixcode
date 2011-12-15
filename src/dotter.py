@@ -56,27 +56,32 @@ def dot(fcts, opts):
         os.system('mkdir %s' % opts.outdir)
 
     for fname, frepr in fcts:
-        filename = '%s/%s.dot' % (opts.outdir, fname)
-
         Labellist = {}
         firstBB = ast.LabelInstruction('%s' % 'START').toBB(Labellist, ast.BB())
         lastBB = frepr.toBB(Labellist, firstBB)
         ast.LabelInstruction('%s' % 'END').toBB(Labellist, lastBB)
         Labellist['END'].remove_links()
-
         link_labels(Labellist['START'], Labellist, [], None)
-        Labellist['START'].visit(DotVisitor(filename))
+        s = Labellist['START'].visit(DotVisitor()).collect()
+
+        filename = '%s/%s.dot' % (opts.outdir, fname)
+        with open(filename, 'w') as f:
+            f.write(s)
         os.system('dot -Tpng %s > %s/%s.png' % (filename, opts.outdir, fname))
 
 class DotVisitor:
-    def __init__(self, filename):
-        self.g = open(filename, 'w')
-        self.g.write('digraph {\n')
-        self.lvl = 0
+    """
+    Visitor pattern used to get the dot description for the instructions of a
+    function.
+    """
+    def __init__(self):
         self.viz = []
-        self.description = ''
+        self.description = 'digraph {\n'
 
     def __call__(self, node):
+        """
+        If it looks like a function it is a function.
+        """
         self.viz.append(node)
         self.description += '\t%d [label=\"%s\"' % (node.bid, \
                 fix('%s' % node.instrs()))
@@ -85,15 +90,15 @@ class DotVisitor:
         self.description += '];\n'
 
         for next_node in node.get_link_list():
-            self.g.write('\t' + node.bid.__str__() + ' -> ' + \
-                    next_node.bid.__str__() + ';\n')
+            self.description += '\t' + node.bid.__str__() + ' -> ' + \
+                    next_node.bid.__str__() + ';\n'
             if next_node not in self.viz:
-                self.lvl += 1
                 self(next_node)
-                self.lvl -= 1
+        return self
 
-        if  self.lvl == 0:
-            self.g.write(self.description)
-            self.g.write('}\n')
-            self.g.close()
+    def collect(self):
+        """
+        Returns the dot representation of the entire function.
+        """
+        return self.description + '}\n'
 
