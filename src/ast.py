@@ -434,6 +434,15 @@ class GoToInstruction(Instruction):
         cBB.add_link(lastBB)
         return lastBB
 
+    def is_goto(self):
+        return True
+
+    def label(self):
+        """
+        Returns label to jump to.
+        """
+        return self._label
+
 class LabelInstruction(Instruction):
     """
     A label. Always the start of a new block.
