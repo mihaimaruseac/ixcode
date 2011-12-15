@@ -1,18 +1,6 @@
 # IxCode - app for code spelunking :: block diagram
 # Generic AST.
 
-START = -1
-END = -2
-
-def fix(string):
-    """
-    Escapes several entities form the passed in string to ensure proper DOT
-    output.
-    """
-    string = string.replace('\\', '\\\\')
-    string = string.replace('"', '\\"')
-    return string
-
 class BB:
     """
     A basic block. To be displayed by itself in the diagram.
@@ -29,218 +17,6 @@ class BB:
         self._lout = []
         self._ignore = False
         self._lin = []
-
-    def build_new_BB(klass, blocks):
-        new_block = BB()
-        blocks[new_block.bid] = new_block
-        return new_block
-
-    def labeled(self, label):
-        if self._leader and self._leader.is_label() and \
-           self._leader.label() == label:
-            return True
-        return False
-
-    def set_istream(self, block, blocks, leaders, links, visited=[],
-            unsolved_jumps={}):
-        """
-        Receives the instruction stream and returns the entire Basic Block
-        hierarchy using the passed-in dictionaries and lists.
-
-        Basically, if we are the starting node recourse with the same
-        instruction stream, collect the last node and link it to the exit
-        point.
-
-        Otherwise, check each instruction in stream and either add it to the
-        current block or create another. When creating another either switch
-        to a new instruction stream (the instruction was a block) or use the
-        same (the instruction caused a break in block flow).
-
-        Create virtual nodes in several places to ensure all links are ok. For
-        example, if not using this the if would have three outbound nodes, but
-        it really has two.
-
-        This method may contain several bugs, they will be discovered through
-        testing. It is the hardest part of this program.
-        """
-        if self.bid == START:
-            new_block = self.build_new_BB(blocks)
-            links[(self.bid, new_block.bid)] = ''
-            last_blocks = new_block.set_istream(block, blocks, leaders, links,
-                    visited, unsolved_jumps)
-            for b in last_blocks:
-                links[(b.bid, END)] = ''
-            for bid in unsolved_jumps:
-                label = unsolved_jumps[bid]
-                for b in blocks:
-                    if blocks[b].labeled(label):
-                        links[bid, b] = ''
-            return []
-
-        instrs = block.instrs()
-
-        break_stream_block = None
-        for i in instrs:
-            if i in visited:
-                continue
-            visited.append(i)
-
-            if i.has_blocks():
-                subblocks = []
-                for b, t in i.blocks():
-                    new_block = self.build_new_BB(blocks)
-                    links[(self.bid, new_block.bid)] = t
-                    nbs = new_block.set_istream(b, blocks,
-                        leaders, links, visited, unsolved_jumps)
-                    subblocks.extend(nbs)
-                    if i.is_loop():
-                        for b in nbs:
-                            links[(b.bid, new_block.bid)] = i.loop_label()
-                new_block = self.build_new_BB(blocks)
-                for b in subblocks:
-                    links[(b.bid, new_block.bid)] = ''
-                if i.pass_through():
-                    links[(self.bid, new_block.bid)] = ''
-                return new_block.set_istream(block, blocks, leaders, links,
-                        visited, unsolved_jumps)
-            else:
-                if i.is_leader():
-                    if not self._leader:
-                        self._leader = i
-                        if i.is_return():
-                            links[(self.bid, END)] = ''
-                            self._instrs.append(i)
-                            new_block = self.build_new_BB(blocks)
-                            subblocks = new_block.set_istream(block, blocks,
-                                    leaders, links, visited, unsolved_jumps)
-                            new_block = self.build_new_BB(blocks)
-                            for b in subblocks:
-                                links[(b.bid, new_block.bid)] = ''
-                            return [new_block]
-                    else:
-                        # time for a new block
-                        new_block = self.build_new_BB(blocks)
-                        last = self._instrs[-1]
-                        if not last.is_goto():
-                            links[(self.bid, new_block.bid)] = ''
-                        else:
-                            unsolved_jumps[self.bid] = last.label()
-                        subblocks = new_block.set_istream(block, blocks,
-                                leaders, links, visited[:-1], unsolved_jumps)
-                        new_block = self.build_new_BB(blocks)
-                        for b in subblocks:
-                            links[(b.bid, new_block.bid)] = ''
-                        return [new_block]
-                self._instrs.append(i)
-
-        if not self._instrs:
-            return [self]
-
-        last = self._instrs[-1]
-        if last.is_return():
-            links[(self.bid, END)] = ''
-            return []
-        if not last.is_goto():
-            return [self]
-        unsolved_jumps[self.bid] = last.label()
-        return []
-
-    def set_istream2(self, blocks, leaders, links, instrs, header, exit,
-                    pheader, pexit, label='', defined_labels={},
-                    undefined_jumps={}):
-        """
-        Receives a list of instructions and adds them to the block tree. Each
-        block added is inserted into blocks with links in links. The leaders
-        list is used to detect splits. also, new blocks can be created by some
-        instructions like if, while, for, return, goto.
-
-        The header and the exit blocks are the blocks before and after the
-        current one. If header is None there was a goto before this block.
-
-        Returns True if the current block has a normal link with the block
-        following it.
-
-        i.is_leader() == i in leaders.values() foreach i in instrs
-        """
-        if header:
-           links[(header.bid, self.bid)] = label
-        lastb = self
-        # get instruction iterator
-        leader_seen = False
-        exit_following = True
-        for i in instrs:
-            assert i.is_leader() == (i in leaders.values())
-            if i.is_leader():
-                if leader_seen:
-                    nb = self.build_new_BB(blocks)
-                    if not exit_following:
-                        lastb = None
-                    istr = instrs[instrs.index(i):]
-                    return nb.set_istream2(blocks, leaders, links, istr,
-                            lastb, exit, pheader, pexit,
-                            defined_labels=defined_labels,
-                            undefined_jumps=undefined_jumps)
-                leader_seen = True
-            if i.has_subblock():
-                h = self.build_new_BB(blocks)
-                links[(self.bid, h.bid)] = '+'
-                e = self.build_new_BB(blocks)
-                lastb = e
-                link_to_end = []
-                new_blocks = []
-                for sb, lbl in i.subblocks():
-                    nb = self.build_new_BB(blocks)
-                    new_blocks.append(nb)
-                    if nb.set_istream2(blocks, leaders, links, sb.instrs(),
-                            h, e, pheader, pexit, label=lbl,
-                            defined_labels=defined_labels,
-                            undefined_jumps=undefined_jumps):
-                        link_to_end.append(nb)
-                i.link_blocks(h, e, links)
-                continue
-            if i.is_label():
-                l = i.label()
-                defined_labels[l] = self.bid
-                if undefined_jumps.has_key(l):
-                    for b in undefined_jumps[l]:
-                        links[(b, self.bid)] = '@'
-                    del undefined_jumps[l]
-                continue
-            if i.is_goto():
-                l = i.label()
-                if defined_labels.has_key(l):
-                    links[(lastb.bid, defined_labels[l])] = '-'
-                else:
-                    if undefined_jumps.has_key(l):
-                        undefined_jumps[l].append(self.bid)
-                    else:
-                        undefined_jumps[l] = [self.bid]
-                exit_following = False
-                continue
-            if i.is_break():
-                links[(lastb.bid, pexit.bid)] = '#'
-                continue
-            self._instrs.append(i)
-            if i.is_return():
-                links[(self.bid, END)] = 'R'
-                return False
-        if exit_following:
-            links[(lastb.bid, exit.bid)] = '>'
-            return True
-        return False # TODO: really?
-
-    def description(self):
-        s = ''
-        if not self._instrs:
-            if self.bid == START:
-                return '<<start>>'
-            elif self.bid == END:
-                return '<<end>>'
-            else:
-                return s
-        for i in self._instrs:
-            s += '%s\\n' % fix('%s' % i)
-        return s
 
     def get_link_list(self):
         return self._lout
@@ -269,28 +45,11 @@ class BB:
     def add_leader(self, l):
         self._leader = l
 
-    def empty(self):
-        return self._instrs == [] and self.bid >= 0
-
     def instrs(self):
         return self._instrs
 
     def visit (self, visitor):
         return visitor (self)
-
-    def __str__(self):
-        return '(%d)%s: [%s]' % (self.bid, self._leader, self._instrs)
-
-    def __repr__(self):
-        return '>%s<' % self.__str__()
-#def find(cBB):
-#    if(cBB._instrs()):
-#        if(cBB._instrs[0].is_loop()):
-#            return cBB
-#    else:
-#        for i in cBB._lin:
-#            find(i)
-
 
 class File():
     """
@@ -314,12 +73,6 @@ class File():
                 d[f] = self._fcts[f]
             self._fcts = d
 
-    def visit(self, visitor):
-        raise NotImplementedError('%s' % self.__class__)
-
-    def toBB(self, BBlabels, cBB):
-        raise NotImplementedError('%s' % self.__class__)
-
     def __iter__(self):
         """
         Returns the stored functions, one by one.
@@ -327,18 +80,11 @@ class File():
         for f in self._fcts:
             yield (f, self._fcts[f])
 
-    def __str__(self):
-        return 'File: %s' % self._fcts
-
-    def __repr__(self):
-        return "-->" + self.__str__() + "<--"
-
 class Node:
     """
     Base class for all nodes in AST. All methods raise exceptions to ensure
     proper derivation.
     """
-
     def __init__(self, info = None):
         self.info = info
 
@@ -423,7 +169,6 @@ class TextNode(Node):
     """
     A node containing a text describing the corresponding instruction.
     """
-
     def __init__(self, text):
         self._text = text
 
@@ -443,12 +188,6 @@ class TextNode(Node):
             return newBB
         cBB.add_instruction(self)
         return cBB
-
-    def __init__(self, text):
-        self._text = text
-
-    def get_text(self):
-        return self._text
 
     def __str__(self):
         return self._text
@@ -494,19 +233,6 @@ class Instruction(TextNode):
         """
         return False
 
-    def has_blocks(self):
-        """
-        Returns True if this instruction contains blocks of other
-        instructions. If True, they can be accessed via blocks().
-        """
-        return False
-
-    def is_jump(self):
-        """
-        Returns True if this instruction may jump.
-        """
-        return False
-
     def is_loop(self):
         """
         Returns True if this is a loop.
@@ -524,32 +250,6 @@ class Instruction(TextNode):
         True if this is a goto instruction.
         """
         return False
-
-    def is_label(self):
-        """
-        True if this is a label instruction.
-        """
-        return False
-
-    def pass_through(self):
-        """
-        True if this block can be skipped.
-        """
-        return False
-
-    def has_subblock(self):
-        """
-        True if this instruction contains a block (it is an if, while,
-        do..while or for).
-        """
-        return False
-
-    def link_blocks(self, header, exit, links):
-        """
-        Links the internal blocks with the header and the exit one, updates
-        the link dictionary.
-        """
-        pass
 
     def is_break(self):
         """
@@ -645,30 +345,8 @@ class ForInstruction(Instruction):
     def has_blocks(self):
         return True
 
-    def is_jump(self):
-        return True
-
     def is_loop(self):
         return True
-
-    def blocks(self):
-        return [(self._content, '')]
-
-    def loop_label(self):
-        return 'for %s' % self._header
-
-    def pass_through(self):
-        return True
-
-    def has_subblock(self):
-        return True
-
-    def subblocks(self):
-        return [(self._content, '')]
-
-    def link_blocks(self, header, exit, links):
-        links[(header.bid, exit.bid)] = 'else'
-        links[(exit.bid, header.bid)] = 'for %s' % self._header
 
     def visit(self, visitor):
         visitor(self)
@@ -691,16 +369,6 @@ class MacroLoopInstruction(ForInstruction):
         ForInstruction.__init__(self, "#loop %s" % header, content)
         self._header = header
 
-    def loop_label(self):
-        return '%s' % self._header
-
-    def link_blocks(self, header, exit, links):
-        links[(header.bid, exit.bid)] = 'else'
-        links[(exit.bid, header.bid)] = '%s' % self._header
-
- #   def toBB(self, BBlabels, cBB):
-  #      raise NotImplementedError('%s' % self.__class__)
-
 class WhileInstruction(Instruction):
     """
     A while instruction. Causes a jump.
@@ -715,33 +383,8 @@ class WhileInstruction(Instruction):
         else:
             self._content = content.block().block()
 
-    def has_blocks(self):
-        return True
-
-    def is_jump(self):
-        return True
-
     def is_loop(self):
         return True
-
-    def blocks(self):
-        return [(self._content, '')]
-
-    def loop_label(self):
-        return 'while (%s)' % self._header
-
-    def pass_through(self):
-        return True
-
-    def has_subblock(self):
-        return True
-
-    def subblocks(self):
-        return [(self._content, '')]
-
-    def link_blocks(self, header, exit, links):
-        links[(header.bid, exit.bid)] = 'else'
-        links[(exit.bid, header.bid)] = 'while %s' % self._header
 
     def visit(self, visitor):
         visitor(self)
@@ -760,19 +403,10 @@ class WhileInstruction(Instruction):
 
 class DoWhileInstruction(WhileInstruction):
     """
-    A do...while instruction. A while but with no pass_through.
+    A do...while instruction. A while.
     """
     def __init__(self, header, content):
         WhileInstruction.__init__(self, "do {...} while (%s)" % header, content)
-        self._header = header
-        self._leader = True
-
-    def pass_through(self):
-        return False
-
-    def link_blocks(self, header, exit, links):
-        # No else label :)
-        links[(exit.bid, header.bid)] = 'do ... while %s' % self._header
 
     def toBB(self, Labellist, cBB):
         firstBB = Instruction.toBB(self, Labellist, cBB)
@@ -794,18 +428,6 @@ class GoToInstruction(Instruction):
         self._label = label
         self._leader = True
 
-    def is_jump(self):
-        return True
-
-    def is_goto(self):
-        return True
-
-    def label(self):
-        """
-        Returns label to jump to.
-        """
-        return self._label
-
     def toBB(self, Labellist, cBB):
         cBB = Instruction.toBB(self, Labellist, cBB)
         lastBB = BB()
@@ -823,15 +445,6 @@ class LabelInstruction(Instruction):
         Instruction.__init__(self, "%s:" % label)
         self._label = label
         self._leader = True
-
-    def is_label(self):
-        return True
-
-    def label(self):
-        """
-        Returns label text.
-        """
-        return '%s' % self._label
 
     def toBB(self, Labellist, cBB):
         cBB = Instruction.toBB(self, Labellist, cBB)
@@ -852,15 +465,6 @@ class BlockInstruction(Instruction):
         return self._block
 
     def is_block(self):
-        return True
-
-    def has_blocks(self):
-        return True
-
-    def blocks(self):
-        return [(self._block, '')]
-
-    def is_jump(self):
         return True
 
     def visit(self, visitor):
@@ -890,21 +494,6 @@ class IfInstruction(Instruction):
             self._false.add(false)
         else:
             self._false = false.block().block()
-
-    def is_jump(self):
-        return True
-
-    def has_blocks(self):
-        return True
-
-    def blocks(self):
-        return [(self._true, 'if %s' % self._cond), (self._false, 'else')]
-
-    def has_subblock(self):
-        return True
-
-    def subblocks(self):
-        return [(self._true, 'if %s' % self._cond), (self._false, 'else')]
 
     def visit(self, visitor):
         visitor(self)
