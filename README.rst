@@ -44,17 +44,10 @@ D. TODO
 .......
 
 1. Parse enums, structs and unions, finish C grammar
-
 2. Parse and graph ``switch``, ``case``, ``continue`` and ``break``.
-
 3. Add a config file for colors
-
 4. Add support for Python too.
-
 5. Add regexp support for function matching
-
 6. Create a more interesting presentation for the tool.
-
 7. Prepare for ROSEdu CDL
-
 8. Make this list into a GitHub issues series.
